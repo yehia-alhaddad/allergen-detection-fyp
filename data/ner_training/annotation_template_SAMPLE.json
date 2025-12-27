@@ -1,0 +1,421 @@
+[
+  {
+    "text": "QuzsTBAR Yout 01/11/16 0r0i041cp01501} Giddn They Saio ThaT This 'Protlin BAR COULDN T MADL But We FinlLy did it\"s Delicious Food PaCKED With CPOTcN T 'MaKIS No compromises Just Read OuR INGrEdilNTs AnD You Ll SEE; CoctalMcoatwoull 20g ONLY 39 NET CaRI OuzSTBAR PROTEIN RAR @IQQQLMDLANITBCIUR Trta GEa War Net W",
+    "image_name": "0888849000463_en",
+    "product_name": "Chocolate peanut butter protein bar, chocolate peanut butter",
+    "declared_allergens": [
+      "milk",
+      "peanuts"
+    ],
+    "entities": []
+  },
+  {
+    "text": "Peanut Butter WAFERS Joigs sGeisiot ~6-2 02 (57g) [ ) PACKAGES NETWT i202 (340g)",
+    "image_name": "20742690_en",
+    "product_name": "Peanut Butter Wafers",
+    "declared_allergens": [
+      "gluten",
+      "milk",
+      "peanuts",
+      "soybeans"
+    ],
+    "entities": [
+      [
+        0,
+        6,
+        "PEANUT"
+      ],
+      [
+        3,
+        6,
+        "TREE_NUT"
+      ]
+    ]
+  },
+  {
+    "text": "[Nutrition Facts sentinas Seoin 10 cenngs Per conane E2 [Ziebut 12 ctizs) Ameunt Earutng Caleries 150 LDaua Total Fate9 SaturatedFang VansFat09 eaan Monatted R Cholesterol 0u2 07 Sodium 0079 Total Carbohydrate 19 Dahg ToaSugas Kre 7gAded8121 Proteln 29 Mtn 07cg 01n073 0eng nd",
+    "image_name": "0099482497989_en",
+    "product_name": "Kettle Cooked Texas Style Barbecue Chips",
+    "declared_allergens": [
+      "mustard"
+    ],
+    "entities": [
+      [
+        1,
+        4,
+        "TREE_NUT"
+      ]
+    ]
+  },
+  {
+    "text": "Organte completely cacao cius unSu Uned chort Iuun Luticou {edranarer POT",
+    "image_name": "00667104_en",
+    "product_name": "Completely Cacao Chips",
+    "declared_allergens": [
+      "nuts"
+    ],
+    "entities": []
+  },
+  {
+    "text": "GMocolra 1 8 YES ' Kegan 1 BARo a Paleo ' BEST ` SNACK ? Gluten-Free 15g Nuts TASTING Sg Protein LOLuo G",
+    "image_name": "0860132001418_en",
+    "product_name": "Dark Chocolate Chip Yes Bar",
+    "declared_allergens": [
+      "nuts",
+      "sesame-seeds"
+    ],
+    "entities": [
+      [
+        57,
+        63,
+        "GLUTEN"
+      ],
+      [
+        73,
+        76,
+        "TREE_NUT"
+      ],
+      [
+        73,
+        77,
+        "TREE_NUT"
+      ]
+    ]
+  },
+  {
+    "text": "NEW 12 BAR VALUE PACK #IINGREDIENT HcarT Healthy ALMONDS KIND Cranberry Almond I3 Gluten Free 12 BARS %.K MAFS",
+    "image_name": "0602652400650_en",
+    "product_name": "Cranberry Almond Granola Bar",
+    "declared_allergens": [
+      "nuts",
+      "soybeans"
+    ],
+    "entities": [
+      [
+        82,
+        88,
+        "GLUTEN"
+      ],
+      [
+        49,
+        55,
+        "TREE_NUT"
+      ]
+    ]
+  },
+  {
+    "text": "TaadcR Joe{ chocolate chip chewy Coated GRANOLA BARS ~tthnlled cxs. ~clydle = chips AMG _ \"T6'0i",
+    "image_name": "00956437_en",
+    "product_name": "Chocolate Chip Chewy Coated Granola Bars",
+    "declared_allergens": [
+      "gluten",
+      "milk",
+      "soybeans"
+    ],
+    "entities": []
+  },
+  {
+    "text": "CBRTITIED ORGANIO Annies HOMEGROWN Organic Cookie Bites Chocolate Chip Oreamic Annies 10 Orte Choc late IChiR Fntaauausumimtuc",
+    "image_name": "0013562493944_en",
+    "product_name": "Organic Chocolate Chip Cookie Bites",
+    "declared_allergens": [
+      "gluten"
+    ],
+    "entities": []
+  },
+  {
+    "text": "WhOLE Power WAFFLES 400z GRAINS GLUTEN FREE KODIAK CAKES FRONTIER OAT WAFFLES",
+    "image_name": "0705599014765_en",
+    "product_name": "Gluten Free Frontier Oat Power Waffles",
+    "declared_allergens": [
+      "eggs",
+      "milk"
+    ],
+    "entities": [
+      [
+        32,
+        38,
+        "GLUTEN"
+      ]
+    ]
+  },
+  {
+    "text": "Uinox 0iui 010/0j04j suoodsnai burjody QJOld SNOILJj4IQ sillycow FARMSa Unlquely Vermont; ! Monren Hot CHOCOLATI",
+    "image_name": "0743504999820_en",
+    "product_name": "Chocolate truffle",
+    "declared_allergens": [
+      "soybeans"
+    ],
+    "entities": []
+  },
+  {
+    "text": "Gamesa) apcoiris Map-shmallow Malvavisco Cookiesz Galletas 6-265 (IS9I packs/ paquetcs NET WTI CONT NETO 155 0z (440g1",
+    "image_name": "0686700101324_en",
+    "product_name": "Gamesa Arcoiris Marshmallow Cookies (6-2.6 Oz) 15.5 Ounce 6 Pack Box",
+    "declared_allergens": [
+      "gluten",
+      "soybeans"
+    ],
+    "entities": []
+  },
+  {
+    "text": "Now MORE FIg BARSI NATZRES BAKERY FIG BAR 32 Real FRUIT & WHOLE GRAINS )3AZ OZ Tig #a",
+    "image_name": "0047495620047_en",
+    "product_name": "Blueberry & Raspberry Fig Bars",
+    "declared_allergens": [
+      "gluten"
+    ],
+    "entities": []
+  },
+  {
+    "text": "Lietzel C Jm SRUNcHY _ CAACKLA SESAME DELI STYLE Rethink 'pielgelt\" VED",
+    "image_name": "0049508006190_en",
+    "product_name": "Pretzel crackers",
+    "declared_allergens": [
+      "gluten",
+      "sesame-seeds"
+    ],
+    "entities": [
+      [
+        31,
+        37,
+        "SESAME"
+      ]
+    ]
+  },
+  {
+    "text": "KETTEcookiDroniooae , Mist Vde / SQUR HERB & COEON^ )aMQU\" OCtt 4s",
+    "image_name": "0028400744508_en",
+    "product_name": "Kettle Cooked Potato Chips Sour Cream Herb & Onion",
+    "declared_allergens": [
+      "milk"
+    ],
+    "entities": []
+  },
+  {
+    "text": "MIsentabeBaG 77111444012 HARIBO GOLd- BEARS GUMI CANDY KGadgouch Ousa mecanl ske 12 MrWordotur @ MITWI 2480201128028169",
+    "image_name": "0042238302518_en",
+    "product_name": "Goldbears",
+    "declared_allergens": [
+      "gelatin"
+    ],
+    "entities": []
+  },
+  {
+    "text": "CDTNd NUTS & SEA SALT WELLSLEY FARMS NUL BAR DARK chocolatE FLAvORED coatikg: HuTS SLA SALT 700",
+    "image_name": "0888670081426_en",
+    "product_name": "Nut Bar",
+    "declared_allergens": [
+      "nuts"
+    ],
+    "entities": [
+      [
+        6,
+        9,
+        "TREE_NUT"
+      ],
+      [
+        6,
+        10,
+        "TREE_NUT"
+      ]
+    ]
+  },
+  {
+    "text": "Sndt k CLASSIC RECIPE VEGAN SMOOTH ~ CAne MADE WITh OAT DRINK",
+    "image_name": "4000539140327_en",
+    "product_name": "Vegan smooth chocolate",
+    "declared_allergens": [
+      "nuts",
+      "soybeans"
+    ],
+    "entities": []
+  },
+  {
+    "text": "FRGsat Oed CamE THNACRERYL EuLne oste Orange OupCakes",
+    "image_name": "0888109010072_en",
+    "product_name": "Orange Cupcakes",
+    "declared_allergens": [
+      "eggs",
+      "gluten",
+      "milk",
+      "soybeans"
+    ],
+    "entities": []
+  },
+  {
+    "text": "Iadrr Jort Jalapena & Cuam Chuse (RISPY WONTONS Cets 95 iltr Ihing cdedent NET WT.7.S 02 (213g) 12p'",
+    "image_name": "00774529_en",
+    "product_name": "Jalape\u00c3\u00b1o & Cream Cheese Crispy Wontons",
+    "declared_allergens": [
+      "gluten",
+      "milk"
+    ],
+    "entities": []
+  },
+  {
+    "text": "SWEET 'N SALTY Mix Fdetrdit dorm 1933 elTEM FaEE 480 Wemigou i Kdis americam Jaait _ MIX",
+    "image_name": "0077034089974_en",
+    "product_name": "Sweet 'n salty, peanuts, cocoa candies, raisins, sunflower kernels the american trail mix, sweet 'n salty",
+    "declared_allergens": [
+      "milk",
+      "peanuts",
+      "soybeans"
+    ],
+    "entities": []
+  },
+  {
+    "text": "Nev RATES BoO EzzEb 5o% MoRE] REAL CHEESD CHEDDAR BLAST",
+    "image_name": "0015665000197_en",
+    "product_name": "Cheddar blast",
+    "declared_allergens": [
+      "milk"
+    ],
+    "entities": []
+  },
+  {
+    "text": "iul WOVEN ~; WHOLE WHEAT CRACKED PEPPER BAKED CRACKERS NATURALLY FLAVORED",
+    "image_name": "4099100063875_en",
+    "product_name": "Cracked pepper wheat",
+    "declared_allergens": [
+      "gluten"
+    ],
+    "entities": []
+  },
+  {
+    "text": "Svidlly Riginal Seeded Crackers | organic Ftn Baown RIcE avinoi FlAx AND Sesahe SEEDS Tmn KUE PER I2CAACKEAS EMll td 1o Snae Jegonst RET WT 5.5 02 (1569}",
+    "image_name": "4061461753764_en",
+    "product_name": "Original Seeded Crackers",
+    "declared_allergens": [
+      "sesame-seeds",
+      "soybeans"
+    ],
+    "entities": []
+  },
+  {
+    "text": "BETTER M4ek (HDEOLALULtta 24 baRS BETTER NUT BAR TACA[C CHOCOLate= Uemsali {otniaen Bo5055y Woidlms",
+    "image_name": "0193968100797_en",
+    "product_name": "THE BETTER NUT BAR DARK CHOCOLATE & SEA SALT",
+    "declared_allergens": [
+      "nuts",
+      "soybeans"
+    ],
+    "entities": [
+      [
+        41,
+        44,
+        "TREE_NUT"
+      ]
+    ]
+  },
+  {
+    "text": "2 GLUTEN FREE VEGAN 9'ET{ GRAIN FREE coOkIeS hiltOp \"Oexican lanilla CHOCOLATE CHIP ALMOND FLOUR cocohut oil NET W7ASO2 (262)",
+    "image_name": "0810091780909_en",
+    "product_name": "Mexican Vanilla Chocolate Chip Cookies",
+    "declared_allergens": [
+      "nuts"
+    ],
+    "entities": [
+      [
+        2,
+        8,
+        "GLUTEN"
+      ],
+      [
+        84,
+        90,
+        "TREE_NUT"
+      ]
+    ]
+  },
+  {
+    "text": "Gvagt Almond & Cranberry Nut Bars Ghion-Fice = 4g Protein Per Serving Hanicials Coior Favcrs 4-1.402 (40g) BARS NET WT 5.6 02 (160g)",
+    "image_name": "0078742294421_en",
+    "product_name": "Almond & Crandberry Nut Bars",
+    "declared_allergens": [
+      "nuts",
+      "soybeans"
+    ],
+    "entities": [
+      [
+        6,
+        12,
+        "TREE_NUT"
+      ],
+      [
+        25,
+        28,
+        "TREE_NUT"
+      ]
+    ]
+  },
+  {
+    "text": "Ynolu graln: 440 icvina Dafy vqa lieu vans gluten free ORIGINAL no aruligcl (Keost Yid J42i9(907",
+    "image_name": "0089947302064_en",
+    "product_name": "Gluten Free Original Waffles",
+    "declared_allergens": [
+      "peach",
+      "soybeans"
+    ],
+    "entities": [
+      [
+        43,
+        49,
+        "GLUTEN"
+      ]
+    ]
+  },
+  {
+    "text": "POTURAL EAT Muult&nut bars dark chocolate Cronbemlot atraa",
+    "image_name": "8000500417348_en",
+    "product_name": "Dark chocolate with cranberries & macadamia fruit & nut bar",
+    "declared_allergens": [
+      "nuts",
+      "soybeans"
+    ],
+    "entities": [
+      [
+        18,
+        21,
+        "TREE_NUT"
+      ]
+    ]
+  },
+  {
+    "text": "CARAMELIZED&SALTED LILYS AO*CHOCOLATE & MILK STEVIA SWEETENED No Sugar Addedl",
+    "image_name": "0856481003807_en",
+    "product_name": "Lilys sweets caramelized salted chocolate bar",
+    "declared_allergens": [
+      "milk",
+      "soybeans"
+    ],
+    "entities": [
+      [
+        40,
+        44,
+        "MILK"
+      ]
+    ]
+  },
+  {
+    "text": "HAZELNUT SEA SALT VECAN CHOCOLATE 429 Hahaena Jeeacut",
+    "image_name": "29211913_en",
+    "product_name": "Hazelnut & Sea Salt Vegan Chocolate",
+    "declared_allergens": [
+      "nuts",
+      "soybeans"
+    ],
+    "entities": [
+      [
+        0,
+        8,
+        "TREE_NUT"
+      ],
+      [
+        5,
+        8,
+        "TREE_NUT"
+      ]
+    ]
+  }
+]

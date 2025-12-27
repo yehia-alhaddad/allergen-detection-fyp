@@ -1,0 +1,14 @@
+{
+  "gluten": ["gluten", "wheat", "barley", "rye", "cereal", "flour", "bread", "pasta", "noodles", "oats", "malt", "triticum", "hordeum", "secale"],
+  "milk": ["milk", "lactose", "casein", "whey", "butter", "cheese", "cream", "yogurt", "milkfat", "milk solids", "lactoserum", "curds", "ghee", "dairy", "lactic", "fermented milk"],
+  "egg": ["egg", "albumen", "ovalbumin", "mayonnaise", "custard", "meringue", "lecithin", "albumin", "lysozyme", "ovomucoid"],
+  "peanut": ["peanut", "groundnut", "arachis", "monkey nuts", "earth nuts", "peanuts oil", "peanut butter"],
+  "tree_nut": ["almond", "walnut", "hazelnut", "cashew", "pistachio", "pecan", "brazil nut", "macadamia", "chestnut", "pignolia", "pine nut", "coconut", "nut", "nuts"],
+  "soy": ["soy", "soya", "soybean", "lecithin", "soy lecithin", "soya oil", "soy flour", "miso", "tempeh", "tofu", "edamame", "soy sauce"],
+  "fish": ["fish", "anchovy", "cod", "salmon", "tuna", "trout", "bass", "herring", "sardine", "whitebait", "fish oil", "fish sauce", "omega-3"],
+  "shellfish": ["shrimp", "prawn", "crab", "lobster", "clam", "oyster", "mussel", "scallop", "squid", "octopus", "calamari", "shellfish", "crustacean", "mollusc"],
+  "sesame": ["sesame", "tahini", "sesame oil", "sesame seeds", "hummus", "halvah"],
+  "mustard": ["mustard", "mustard seed", "mustard powder", "dijon"],
+  "celery": ["celery", "celeriac", "celery seed", "celery salt", "celery juice"],
+  "sulfites": ["sulfites", "sulphur-dioxide", "sulphites", "so2", "preservative", "dried fruit", "wine", "vinegar", "sulphur"]
+}

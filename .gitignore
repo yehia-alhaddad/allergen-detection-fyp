@@ -1,0 +1,39 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Node/Next.js
+webapp/node_modules/
+webapp/.next/
+webapp/.env.local
+webapp/.env*
+webapp/NUL
+
+# Data & models (large files)
+models/**
+!models/README.md
+results/**
+data/raw/**
+data/processed/**
+data/ocr_results/**
+notebooks/.ipynb_checkpoints/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/tasks.json
+
+# Cache/artifacts
+*.bin
+*.ckpt
+*.pt
+*.onnx
+
+# SQLite/Prisma
+webapp/prisma/dev.db
+*.sqlite

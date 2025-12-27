@@ -1,0 +1,44 @@
+// Prisma schema for Allergen Safety Checker
+// Dev: SQLite; Prod: Postgres
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime     @default(now())
+  allergens    UserAllergen[]
+  scans        ScanHistory[]
+}
+
+model UserAllergen {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  name      String
+  synonyms  String   @default("[]") // JSON array as string
+  severity  String?
+  createdAt DateTime @default(now())
+}
+
+model ScanHistory {
+  id               String         @id @default(cuid())
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String
+  type             String         // IMAGE, CAMERA, BARCODE, TEXT
+  productName      String?
+  classification   String         // SAFE, CAUTION, UNSAFE
+  matchedAllergens String         // JSON array as string [{name, source, snippet, confidence?}]
+  inputMetadata    String?        // JSON as string
+  storeRawImage    Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+}

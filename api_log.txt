@@ -1,0 +1,19 @@
+nohup: ignoring input
+D:\APU Materials\Year 3 Semester 2\FYP\allergen-detection-fyp\src\api\allergen_api.py:70: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+INFO:     Started server process [25064]
+INFO:     Waiting for application startup.
+[BarcodeDetector] Pyzbar not available. Install: pip install pyzbar pillow
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+[OK] Barcode detector initialized
+[OK] API startup complete
+INFO:     127.0.0.1:9873 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:18977 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49248 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49294 - "GET /health HTTP/1.1" 200 OK

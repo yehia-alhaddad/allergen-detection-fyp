@@ -1,0 +1,44 @@
+{
+  "labels": [
+    "GLUTEN",
+    "MILK",
+    "EGG",
+    "PEANUT",
+    "TREE_NUT",
+    "SOY",
+    "FISH",
+    "SHELLFISH",
+    "SESAME",
+    "MUSTARD",
+    "CELERY",
+    "SULFITES"
+  ],
+  "label_to_id": {
+    "GLUTEN": 0,
+    "MILK": 1,
+    "EGG": 2,
+    "PEANUT": 3,
+    "TREE_NUT": 4,
+    "SOY": 5,
+    "FISH": 6,
+    "SHELLFISH": 7,
+    "SESAME": 8,
+    "MUSTARD": 9,
+    "CELERY": 10,
+    "SULFITES": 11
+  },
+  "id_to_label": {
+    "0": "GLUTEN",
+    "1": "MILK",
+    "2": "EGG",
+    "3": "PEANUT",
+    "4": "TREE_NUT",
+    "5": "SOY",
+    "6": "FISH",
+    "7": "SHELLFISH",
+    "8": "SESAME",
+    "9": "MUSTARD",
+    "10": "CELERY",
+    "11": "SULFITES"
+  }
+}
