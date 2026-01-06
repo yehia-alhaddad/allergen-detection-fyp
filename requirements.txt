@@ -1,7 +1,6 @@
 # Core runtime
 fastapi>=0.110
 uvicorn[standard]>=0.30
-streamlit>=1.32
 
 # NLP and modeling
 transformers>=4.37
@@ -14,7 +13,6 @@ seqeval>=1.2.2
 easyocr>=1.7
 opencv-python>=4.8
 Pillow>=10.0
-pyzbar>=0.1.9  # Barcode detection
 
 # Data + utils
 numpy>=1.24
@@ -33,3 +31,4 @@ seaborn>=0.13
 
 # Optional: ensure Windows compatibility
 typing-extensions>=4.9
+sqlmodel>=0.0.22

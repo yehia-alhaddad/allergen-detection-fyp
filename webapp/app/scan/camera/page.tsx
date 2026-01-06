@@ -1,7 +1,7 @@
 "use client"
 import { useState } from 'react'
 import CameraCapture from '@/components/scan/CameraCapture'
-import ScanResult from '@/components/scan/ScanResult'
+import EnhancedScanResult from '@/components/scan/EnhancedScanResult'
 
 export default function ScanCameraPage() {
   const [result, setResult] = useState<any>(null)
@@ -9,9 +9,41 @@ export default function ScanCameraPage() {
 
   const onCapture = async (base64: string) => {
     setLoading(true)
-    const res = await fetch('/api/infer/capture', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: base64 }) })
+    const bytes = Buffer.from(base64, 'base64')
+    const blob = new Blob([bytes], { type: 'image/jpeg' })
+    const formData = new FormData()
+    formData.append('file', blob, 'capture.jpg')
+    
+    const res = await fetch('/api/infer/image', { 
+      method: 'POST', 
+      body: formData 
+    })
     const data = await res.json()
-    setResult(data)
+    
+    if (res.ok) {
+      // Transform API response to match EnhancedScanResult format
+      const allergenDetection = data.allergen_detection || {}
+      const transformedResult = {
+        contains: (allergenDetection.contains || []).map((a: any) => ({
+          allergen: a.allergen,
+          trigger_phrase: a.evidence || a.matched_keyword || '',
+          source_section: 'ingredients' as const,
+          confidence: a.confidence || 0.9
+        })),
+        may_contain: (allergenDetection.may_contain || []).map((a: any) => ({
+          allergen: a.allergen,
+          trigger_phrase: a.evidence || a.matched_keyword || '',
+          source_section: 'warning_statement' as const,
+          confidence: a.confidence || 0.9
+        })),
+        not_detected: (allergenDetection.not_detected || []).map((a: any) => ({
+          allergen: typeof a === 'string' ? a : a.name,
+          reason: 'No matching terms found',
+          confidence: 0.1
+        }))
+      }
+      setResult(transformedResult)
+    }
     setLoading(false)
   }
 
@@ -20,7 +52,7 @@ export default function ScanCameraPage() {
       <h1 className="text-2xl font-semibold">Use Camera</h1>
       <CameraCapture onCapture={onCapture} />
       {loading && <p>Analyzing...</p>}
-      {result && <ScanResult result={{ classification: result.classification, matches: result.matches || [] }} />}
+      {result && <EnhancedScanResult result={result} />}
     </main>
   )
 }

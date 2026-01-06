@@ -5,7 +5,7 @@
       "label": "Start ML API",
       "type": "shell",
       "command": "${workspaceFolder}/.venv/Scripts/python.exe",
-      "args": ["src/api/allergen_api.py"],
+      "args": ["-m", "src.api.allergen_api"],
       "isBackground": true,
       "problemMatcher": [],
       "presentation": {
@@ -31,14 +31,73 @@
       }
     },
     {
-      "label": "Start All Services",
-      "dependsOn": ["Start ML API", "Start Website"],
+      "label": "Start All Services (Robust)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}/scripts/start-all-services.ps1"
+      ],
+      "isBackground": false,
       "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "group": "dev"
+      },
       "group": {
         "kind": "build",
         "isDefault": true
       }
-    }
+    },
+    {
+      "label": "Start ML API (LAN)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "args": ["-m", "src.api.allergen_api", "--host", "0.0.0.0", "--port", "8000"],
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "phone"
+      }
+    },
+    {
+      "label": "Start Website (LAN)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev:lan"],
+      "options": {
+        "cwd": "${workspaceFolder}/webapp"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "phone"
+      }
+    },
+    {
+      "label": "Start Phone Tunnel (All-in-One)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}/scripts/start-phone-tunnel.ps1"
+      ],
+      "isBackground": false,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "group": "phone"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
     {
       "label": "Publish to GitHub",
       "type": "shell",

@@ -34,7 +34,7 @@ model ScanHistory {
   id               String         @id @default(cuid())
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId           String
-  type             String         // IMAGE, CAMERA, BARCODE, TEXT
+  type             String         // IMAGE, CAMERA, TEXT
   productName      String?
   classification   String         // SAFE, CAUTION, UNSAFE
   matchedAllergens String         // JSON array as string [{name, source, snippet, confidence?}]

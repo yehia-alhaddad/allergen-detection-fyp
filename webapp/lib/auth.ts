@@ -6,7 +6,8 @@ import argon2 from 'argon2'
 export const authOptions: AuthOptions = {
   session: { strategy: 'jwt' },
   pages: {
-    signIn: '/(auth)/sign-in'
+    // Align with the actual sign-in route we expose in app/signin
+    signIn: '/signin'
   },
   providers: [
     Credentials({

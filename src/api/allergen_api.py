@@ -7,6 +7,14 @@ import sys
 import io
 import os
 
+# Disable slow huggingface metadata checks on Windows
+os.environ['HF_HUB_DISABLE_TELEMETRY'] = '1'
+os.environ['HUGGINGFACE_HUB_CACHE'] = str(os.path.expanduser('~/.cache/huggingface'))
+
+# Disable PyTorch JIT compilation to avoid slow imports on Windows
+os.environ['TORCH_JIT'] = '0'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 # Configure stdout/stderr for UTF-8 on Windows
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -20,26 +28,23 @@ import time
 import tempfile
 from pathlib import Path
 from typing import Optional, Dict
+
+# Import heavy dependencies LAZILY during startup, not at module load time
+# This allows the FastAPI server to start immediately without waiting for transformers/torch
 import numpy as np
-import torch
 import cv2
-from transformers import AutoTokenizer, AutoModelForTokenClassification
+
 from collections import defaultdict
 
-from src.ocr.simple_ocr_engine import SimpleOCREngine
-from src.ocr.layout_parser import reconstruct_text
-from src.barcode.barcode_detector import BarcodeDetector
+# Lazy imports - will be loaded in startup_event
+SimpleOCREngine = None
+reconstruct_text = None
+OCRTextCleaner = None
+extract_allergen_mentions = None
+enhance_allergen_detection = None
+format_enhanced_for_response = None
 
-# Add access to scripts for advanced cleaning
-from pathlib import Path as _PathForImport
-import sys as _sys_for_import
-_root_dir = _PathForImport(__file__).parent.parent.parent
-_sys_for_import.path.insert(0, str(_root_dir / "scripts"))
-try:
-    from ocr_text_cleaner import OCRTextCleaner, extract_allergen_mentions  # type: ignore
-except Exception:
-    OCRTextCleaner = None
-    extract_allergen_mentions = None
+# Note: StrictAllergenDetector will be imported in startup_event
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -48,7 +53,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Add CORS middleware to allow Streamlit frontend requests
+# Add CORS middleware to allow web frontend requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow all origins for development
@@ -61,19 +66,82 @@ app.add_middleware(
 model = None
 tokenizer = None
 ocr_engine = None
-barcode_detector = None
 allergen_dictionary = None
 id2label = None
 label2id = None
 device = None
 text_cleaner = None
+torch = None  # Will be imported in startup
+strict_detector = None  # New strict allergen detector
 
 @app.on_event("startup")
 async def startup_event():
     """Load models and components on startup."""
-    global model, tokenizer, ocr_engine, barcode_detector, allergen_dictionary, id2label, label2id, device, text_cleaner
+    global model, tokenizer, ocr_engine, allergen_dictionary, id2label, label2id, device, text_cleaner
+    global torch
+    global SimpleOCREngine, reconstruct_text, OCRTextCleaner, extract_allergen_mentions
+    global strict_detector, enhance_allergen_detection, format_enhanced_for_response
+    global init_db, save_detection_result
+
+    # CRITICAL: Import torch and transformers INSIDE startup, not at module level
+    # This allows server to start immediately without waiting for heavy imports
+    print("[INFO] Loading torch and transformers libraries...")
+    try:
+        import torch
+        from transformers import AutoTokenizer, AutoModelForTokenClassification
+    except ImportError as e:
+        print(f"[ERROR] Failed to import torch/transformers: {e}")
+        return
+
+    # Import OCR modules (these have slow pandas imports)
+    print("[INFO] Loading OCR modules...")
+    try:
+        from src.ocr.simple_ocr_engine import SimpleOCREngine
+        from src.ocr.layout_parser import reconstruct_text
+    except ImportError as e:
+        print(f"[ERROR] Failed to import OCR modules: {e}")
+        return
+
+    # Import text cleaner
+    try:
+        from pathlib import Path as _PathForImport
+        import sys as _sys_for_import
+        _root_dir = _PathForImport(__file__).parent.parent.parent
+        _sys_for_import.path.insert(0, str(_root_dir / "scripts"))
+        from ocr_text_cleaner import OCRTextCleaner, extract_allergen_mentions  # type: ignore
+    except Exception as e:
+        print(f"[WARN] Could not load text cleaner: {e}")
+        OCRTextCleaner = None
+        extract_allergen_mentions = None
+
+    # Import enhanced detector functions for Gemini AI
+    try:
+        from src.allergen_detection.enhanced_detector import (
+            enhance_allergen_detection as enhance_fn,
+            format_enhanced_for_response as format_fn
+        )
+        enhance_allergen_detection = enhance_fn
+        format_enhanced_for_response = format_fn
+        print("[OK] Enhanced detector (Gemini AI) functions loaded")
+    except Exception as e:
+        print(f"[WARN] Could not load enhanced detector: {e}")
+        enhance_allergen_detection = None
+        format_enhanced_for_response = None
+
+    # Import database helpers
+    try:
+        from src.db import init_db as _init_db, save_detection_result as _save_detection_result
+        init_db = _init_db
+        save_detection_result = _save_detection_result
+        init_db()
+        print("[OK] Database initialized")
+    except Exception as e:
+        print(f"[WARN] Database initialization failed: {e}")
+        init_db = None
+        save_detection_result = None
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"[INFO] Using device: {device}")
 
     # Load paths
     root_dir = Path(__file__).parent.parent.parent
@@ -99,32 +167,64 @@ async def startup_event():
         if experiments:
             model_path = experiments[0].parent
 
+    print(f"[INFO] Loading NER model from {model_path}...")
+    print("[INFO] Loading tokenizer...")
     tokenizer = AutoTokenizer.from_pretrained(model_path)
+    print("[INFO] Loading model...")
     model = AutoModelForTokenClassification.from_pretrained(model_path)
-    model = model.to(device).eval()
+    print(f"[INFO] Moving model to {device}...")
+    try:
+        # Set a timeout for GPU operations - if it hangs, use CPU instead
+        import signal
+        def timeout_handler(signum, frame):
+            print("[WARN] GPU model.to(device) timed out, using CPU fallback")
+            raise TimeoutError("GPU operation timeout")
+        
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(15)  # 15 second timeout
+        try:
+            model = model.to(device).eval()
+            signal.alarm(0)  # Cancel alarm if successful
+        except TimeoutError:
+            print("[WARN] Falling back to CPU")
+            device = torch.device("cpu")
+            model = model.to(device).eval()
+    except Exception as e:
+        print(f"[WARN] Could not move model to {device}, using CPU: {e}")
+        device = torch.device("cpu")
+        model = model.to(device).eval()
+    print(f"[OK] NER model loaded")
 
     # Initialize OCR
     try:
+        print("[INFO] Initializing OCR engine...")
         ocr_engine = SimpleOCREngine(lang_list=["en"], gpu=torch.cuda.is_available())
-    except Exception:
+        print("[OK] OCR engine initialized")
+    except Exception as e:
+        print(f"[WARN] OCR initialization failed: {e}")
         ocr_engine = None
 
     # Advanced cleaner
     if OCRTextCleaner is not None:
         try:
+            print("[INFO] Loading text cleaner...")
             text_cleaner = OCRTextCleaner()
-        except Exception:
+            print("[OK] Text cleaner loaded")
+        except Exception as e:
+            print(f"[WARN] Text cleaner initialization failed: {e}")
             text_cleaner = None
 
-    # Initialize barcode detector
+    # Initialize strict detector
     try:
-        barcode_detector = BarcodeDetector()
-        print("[OK] Barcode detector initialized")
+        print("[INFO] Initializing strict allergen detector...")
+        from src.allergen_detection.strict_detector import StrictAllergenDetector
+        strict_detector = StrictAllergenDetector()
+        print("[OK] Strict allergen detector initialized")
     except Exception as e:
-        print(f"[WARNING] Barcode detector failed: {e}")
-        barcode_detector = None
+        print(f"[WARN] Strict detector initialization failed: {e}")
+        strict_detector = None
 
-    print("[OK] API startup complete")
+    print("[OK] API startup complete - ready for inference")
 
 def clean_text(text: str) -> str:
     """Use robust cleaner when available, fallback to basic normalization."""
@@ -260,59 +360,6 @@ def union_with_dictionary(cleaned_text: str, mapped_from_ner: dict) -> dict:
         result[up_key] = items
     return result
 
-@app.post("/detect-barcode")
-async def detect_barcode(file: UploadFile = File(...)):
-    """Detect allergens using barcode scanning (fast path, no OCR needed)."""
-    if barcode_detector is None:
-        raise HTTPException(status_code=503, detail="Barcode detector not available")
-    
-    try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
-            content = await file.read()
-            tmp.write(content)
-            tmp_path = tmp.name
-        
-        # Try quick barcode detection
-        result = barcode_detector.quick_detect(tmp_path)
-        
-        if result:
-            # Success - return allergen info from OpenFoodFacts
-            detected_allergens = {}
-            for allergen in result.get('allergens', []):
-                detected_allergens[allergen] = [{
-                    'text': result.get('allergen_text', ''),
-                    'label': 'BARCODE_LOOKUP',
-                    'confidence': 0.95  # High confidence for API data
-                }]
-            
-            return JSONResponse({
-                "success": True,
-                "source": "barcode",
-                "barcode": result['barcode'],
-                "product_name": result['name'],
-                "brand": result['brand'],
-                "detected_allergens": detected_allergens,
-                "allergen_count": len(detected_allergens),
-                "raw_text": result.get('ingredients', ''),
-                "api_url": result.get('url', '')
-            })
-        else:
-            # No barcode found - return empty result
-            return JSONResponse({
-                "success": True,
-                "source": "barcode",
-                "barcode": None,
-                "message": "No barcode detected in image. Use /detect endpoint with OCR instead.",
-                "detected_allergens": {}
-            })
-    except Exception as e:
-        return JSONResponse({"success": False, "error": str(e)}, status_code=400)
-    finally:
-        try:
-            os.unlink(tmp_path)
-        except:
-            pass
-
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
@@ -329,32 +376,36 @@ async def detect_allergens(file: UploadFile = File(...), use_ocr: bool = True):
     if model is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
     
+    print(f"[INFO] /detect called: file={file.filename}, use_ocr={use_ocr}")
+    
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
             content = await file.read()
             tmp.write(content)
             tmp_path = tmp.name
         
+        print(f"[DEBUG] Image saved to {tmp_path}")
+        
         result = {
             "success": False,
             "error": None,
-            "raw_text": "",
-            "cleaned_text": "",
+            "allergen_detection": {},
             "detected_allergens": {},
             "avg_confidence": 0.0,
-            "timings": {},
-            "entities_found": []
+            "timings": {}
         }
         
         try:
             # OCR
+            print("[DEBUG] Starting OCR...")
             t0 = time.time()
             img = cv2.imread(tmp_path)
             if img is None:
-                raise ValueError("Could not read image")
+                raise ValueError("Could not read image. Please try to upload a different image or ensure the image shows ingredient label clearly.")
             raw_text = ""
             segments = []
             if use_ocr and ocr_engine:
+                print(f"[DEBUG] Using OCR engine to extract text...")
                 # Prefer detailed boxes + layout reconstruction for human-like order
                 items = ocr_engine.read_boxes(img)
                 if items:
@@ -364,85 +415,206 @@ async def detect_allergens(file: UploadFile = File(...), use_ocr: bool = True):
                 else:
                     raw_text = ocr_engine.extract(img)
             result["timings"]["ocr"] = time.time() - t0
-            result["raw_text"] = raw_text
-            result["segments"] = segments
 
             # Clean
+            print("[DEBUG] Cleaning text...")
             t0 = time.time()
             cleaned = clean_text(raw_text)
-            result["cleaned_text"] = cleaned
             result["timings"]["cleaning"] = time.time() - t0
             if not cleaned:
-                raise ValueError("No text extracted from image")
+                raise ValueError("Image does not appear to contain ingredient text. Please try uploading a product image with visible ingredient labels or ingredient text.")
+            print(f"[DEBUG] Text cleaned: length={len(cleaned)}")
 
-            # NER
+            # Strict Allergen Detection (new explainable detection)
+            print("[DEBUG] Running strict allergen detection...")
             t0 = time.time()
-            entities = run_ner_prediction(cleaned)
-            result["entities_found"] = entities
-            result["timings"]["ner"] = time.time() - t0
+            if strict_detector is None:
+                raise ValueError("Allergen detector not initialized")
+            
+            detection_result = strict_detector.detect(cleaned)
+            result["timings"]["detection"] = time.time() - t0
+            
+            # Use basic formatting (offline mode - no Gemini)
+            print("[INFO] Using basic formatting (Gemini AI disabled for offline mode)...")
+            formatted = {}
+            formatted['contains'] = [
+                {
+                    'allergen': a.name,
+                    'evidence': a.evidence,
+                    'keyword': a.matched_keyword,
+                    'confidence': round(a.confidence, 2)
+                }
+                for a in detection_result['contains']
+            ]
+            formatted['may_contain'] = [
+                {
+                    'allergen': a.name,
+                    'evidence': a.evidence,
+                    'keyword': a.matched_keyword,
+                    'confidence': round(a.confidence, 2)
+                }
+                for a in detection_result['may_contain']
+            ]
+            formatted['not_detected'] = [a.name for a in detection_result['not_detected']]
+            formatted['summary'] = {
+                'contains_count': len(detection_result['contains']),
+                'may_contain_count': len(detection_result['may_contain']),
+                'total_detected': len(detection_result['contains']) + len(detection_result['may_contain'])
+            }
+            result["allergen_detection"] = formatted
+            
+            # For backward compatibility, also provide old format
+            allergen_detection = result["allergen_detection"]
+            detected_allergens = {}
+            for allergen in allergen_detection.get('contains', []) + allergen_detection.get('may_contain', []):
+                allergen_name = allergen['allergen']
+                detected_allergens[allergen_name] = [{
+                    'text': allergen.get('evidence', ''),
+                    'label': 'STRICT_DETECTOR',
+                    'confidence': allergen.get('confidence', 0),
+                    'category': allergen.get('category', 'UNKNOWN'),
+                    'keyword': allergen.get('keyword', ''),
+                    'cleaned_text': allergen.get('cleaned_trigger_phrase', ''),
+                    'health_recommendation': allergen.get('health_recommendation', {})
+                }]
+            result["detected_allergens"] = detected_allergens
 
-            # Mapping + Union
-            t0 = time.time()
-            mapped = map_to_standard_allergens(entities)
-            merged = union_with_dictionary(cleaned, mapped)
-            result["detected_allergens"] = merged
-            result["timings"]["mapping"] = time.time() - t0
+            # Persist detection result
+            try:
+                if save_detection_result is not None:
+                    save_detection_result(
+                        allergen_detection=result["allergen_detection"],
+                        raw_text=raw_text,
+                        cleaned_text=cleaned,
+                        timings=result.get("timings", {}),
+                        source="image",
+                    )
+            except Exception as e:
+                print(f"[WARN] Failed to persist detection result: {e}")
+            
+            print(f"[DEBUG] Detection complete: contains={len(allergen_detection.get('contains', []))}, may_contain={len(allergen_detection.get('may_contain', []))}")
 
-            # Confidence and totals
-            confs = [d['confidence'] for v in merged.values() for d in v]
-            result["avg_confidence"] = float(np.mean(confs)) if confs else 0.0
+            # Timings and totals
             result["timings"]["total"] = sum(result["timings"].values())
             result["success"] = True
+            print(f"[INFO] /detect success: took {result['timings']['total']:.2f}s")
         finally:
             Path(tmp_path).unlink(missing_ok=True)
 
         return JSONResponse(result)
     except Exception as e:
+        print(f"[ERROR] /detect failed: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
         return JSONResponse({"success": False, "error": str(e)}, status_code=400)
 
 @app.post("/detect-text")
 async def detect_allergens_from_text(text: str):
     """Detect allergens from provided text (no OCR)."""
-    if model is None:
-        raise HTTPException(status_code=503, detail="Model not loaded")
+    if strict_detector is None:
+        raise HTTPException(status_code=503, detail="Allergen detector not loaded")
 
     try:
         result = {
             "success": False,
             "error": None,
-            "raw_text": text,
-            "cleaned_text": "",
+            "allergen_detection": {},
             "detected_allergens": {},
             "avg_confidence": 0.0,
             "timings": {}
         }
 
-        # Clean
+        # Clean text
         t0 = time.time()
         cleaned = clean_text(text)
-        result["cleaned_text"] = cleaned
         result["timings"]["cleaning"] = time.time() - t0
         if not cleaned:
             raise ValueError("No text provided")
 
-        # NER
+        # Strict Allergen Detection (new explainable detection)
         t0 = time.time()
-        entities = run_ner_prediction(cleaned)
-        result["timings"]["ner"] = time.time() - t0
+        detection_result = strict_detector.detect(cleaned)
+        result["timings"]["detection"] = time.time() - t0
+        
+        # Format results without Gemini enhancement (offline mode)
+        formatted = {}
+        formatted['contains'] = [
+            {
+                'allergen': a.name,
+                'evidence': a.evidence,
+                'keyword': a.matched_keyword,
+                'confidence': round(a.confidence, 2)
+            }
+            for a in detection_result['contains']
+        ]
+        formatted['may_contain'] = [
+            {
+                'allergen': a.name,
+                'evidence': a.evidence,
+                'keyword': a.matched_keyword,
+                'confidence': round(a.confidence, 2)
+            }
+            for a in detection_result['may_contain']
+        ]
+        formatted['not_detected'] = [a.name for a in detection_result['not_detected']]
+        formatted['summary'] = {
+            'contains_count': len(detection_result['contains']),
+            'may_contain_count': len(detection_result['may_contain']),
+            'total_detected': len(detection_result['contains']) + len(detection_result['may_contain'])
+        }
+        result["allergen_detection"] = formatted
+        
+        # For backward compatibility, also provide old format
+        allergen_detection = result["allergen_detection"]
+        detected_allergens = {}
+        for allergen in allergen_detection.get('contains', []) + allergen_detection.get('may_contain', []):
+            allergen_name = allergen['allergen']
+            detected_allergens[allergen_name] = [{
+                'text': allergen.get('evidence', ''),
+                'label': 'STRICT_DETECTOR',
+                'confidence': allergen.get('confidence', 0),
+                'category': allergen.get('category', 'UNKNOWN'),
+                'keyword': allergen.get('keyword', ''),
+                'cleaned_text': allergen.get('cleaned_trigger_phrase', ''),
+                'health_recommendation': allergen.get('health_recommendation', {})
+            }]
+        result["detected_allergens"] = detected_allergens
+        result["timings"]["detection"] = time.time() - t0
+        
+        # For backward compatibility, also provide old format
+        detected_allergens = {}
+        for allergen in formatted['contains'] + formatted['may_contain']:
+            allergen_name = allergen['allergen']
+            detected_allergens[allergen_name] = [{
+                'text': allergen['evidence'],
+                'label': 'STRICT_DETECTOR',
+                'confidence': allergen['confidence'],
+                'category': 'CONTAINS' if allergen in formatted['contains'] else 'MAY_CONTAIN',
+                'keyword': allergen['keyword']
+            }]
+        result["detected_allergens"] = detected_allergens
 
-        # Mapping + Union
-        t0 = time.time()
-        mapped = map_to_standard_allergens(entities)
-        merged = union_with_dictionary(cleaned, mapped)
-        result["detected_allergens"] = merged
-        result["timings"]["mapping"] = time.time() - t0
-
-        confs = [d['confidence'] for v in merged.values() for d in v]
+        # Persist detection result for text-only input
+        try:
+            if save_detection_result is not None:
+                save_detection_result(
+                    allergen_detection=result["allergen_detection"],
+                    raw_text=result.get("raw_text", ""),
+                    cleaned_text=result.get("cleaned_text", ""),
+                    timings=result.get("timings", {}),
+                    source="text",
+                )
+        except Exception as e:
+            print(f"[WARN] Failed to persist detection result: {e}")
+        
+        confs = [allergen['confidence'] for allergen in formatted['contains'] + formatted['may_contain']]
         result["avg_confidence"] = float(np.mean(confs)) if confs else 0.0
         result["timings"]["total"] = sum(result["timings"].values())
         result["success"] = True
+        print(f"[INFO] /detect-text success: contains={len(formatted['contains'])}, may_contain={len(formatted['may_contain'])}")
         return JSONResponse(result)
     except Exception as e:
+        print(f"[ERROR] /detect-text failed: {type(e).__name__}: {e}")
         return JSONResponse({"success": False, "error": str(e)}, status_code=400)
 
 if __name__ == "__main__":

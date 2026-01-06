@@ -14,7 +14,7 @@
 | **Dependencies** | ✅ **Complete** | All required packages in requirements.txt |
 | **Project Structure** | ✅ **Organized** | Logical folder hierarchy: data, models, scripts, src, notebooks |
 | **OCP Engine** | ✅ **Working** | EasyOCR tested successfully on sample products |
-| **API/UI Framework** | ✅ **Deployed** | FastAPI backend + Streamlit frontend operational |
+| **API/UI Framework** | ✅ **Deployed** | FastAPI backend + Next.js frontend operational |
 
 ### ⚠️ Critical Issues Found
 1. **Only 14 Annotated Samples** (Train:9, Val:2, Test:3)
@@ -302,7 +302,7 @@ model_path = "models/ner_model"  # Auto-loads latest
 
 #### Step 4.2: Test End-to-End Pipeline
 - API accepts image → OCR → NER → Allergen detection
-- Streamlit UI shows results with confidence scores
+- Web frontend shows results with confidence scores
 - Test on real product labels
 
 #### Step 4.3: Performance Benchmarking

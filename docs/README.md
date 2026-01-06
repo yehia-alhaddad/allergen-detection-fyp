@@ -60,7 +60,6 @@ Located in `../tests/`:
 
 ```
 allergen-detection-fyp/
-├── app/                    # Streamlit UI
 ├── configs/                # Configuration files
 ├── data/                   # Datasets and annotations
 │   ├── raw/               # Raw images (10,083)
@@ -92,4 +91,3 @@ allergen-detection-fyp/
 - [Hugging Face Transformers](https://huggingface.co/docs/transformers)
 - [EasyOCR Documentation](https://github.com/JaidedAI/EasyOCR)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Streamlit Documentation](https://docs.streamlit.io/)

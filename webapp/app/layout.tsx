@@ -5,7 +5,7 @@ import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'SafeEats - Allergen Detection',
-  description: 'Instantly detect allergens in any food product. Upload photos, scan barcodes, or paste ingredients.'
+  description: 'Instantly detect allergens in any food product. Upload photos, use your camera, or paste ingredients.'
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

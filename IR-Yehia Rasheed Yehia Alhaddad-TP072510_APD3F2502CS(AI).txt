@@ -1,0 +1,759 @@
+
+
+
+
+Enhancing Food Safety through Artificial Intelligence Powered Allergen Detection in Packaged Product Labels
+
+
+
+By
+
+Yehia Rasheed Yehia Alhaddad 
+TP072510
+APD3F2502CS(AI)
+
+A report submitted in partial fulfillment of the requirements for the degree of B.Sc. (Hons) Computer Science Specialism in Artificial Intelligence
+at Asia Pacific University of Technology and Innovation.
+
+
+
+Supervised by Dr. Raja Rajeswari A/P Ponnusamy
+
+2nd Marker: Lai Chew Ping
+2025
+
+ACKNOWLEDGEMENT
+
+      I would like to thank my project supervisor, DR Rajeswari, for her guidance and support throughout the final year project. I would also thank my second marker, DR Nowshath, for helping with the report marking. Other than that, I would like to thank my mentor, Dr Tan Li June, as she also prepared us for the problems of the investigation report. She never misses to guide us whenever we need guidance and assistance. I acknowledge my friends and lecturer who were involved in brainstorming with me during the title generation process. Special Thanks to my lecturers, and everyone who helped me during my course of study at Asia Pacific University of Technology and Innovation. Apart from this, I would also like to thank all my participants of my questionnaire survey in my data collection. Finally, without all the help and support of all my instructors, family, and friends, this project could not have been done. I am immensely thankful for all the help received.
+
+ABSTRACT
+
+     The purpose of this project is to enhance food safety through the design of an Artificial Intelligence based system to detect allergens in food labels. This study exists within the intersection of consumer health and Artificial Intelligence and addresses a significant public health concern (food allergies) that is experienced by approximately 10% of adults and approximately 8% of children worldwide. Despite food labeling regulations, consumers often struggle to identify allergenic ingredients from labels because of small print, multi-lingual labels, and inconsistent format of labels. These barriers present significant problems for people with food sensitivities, parents or caregivers of children, and consumers concerned about health. The proposed Artificial Intelligence based development will use Optical Character Recognition (OCR) tools (i.e. Tesseract, and EasyOCR), extract ingredient text from consumer product label images, and subsequently utilize a Natural Language Processing (NLP) technique to identify extracted terms and classify them based on a predefined list of allergens (i.e. peanuts, milk, gluten, soy, etc.). The system will also allow for a simple offline compatible system interface that enables the user to upload an image of a label and receive an allergen alert in real time. The anticipated outcome is a lightweight, functional prototype that enhances food label clarity and facilitates safe food selections. This would support the Sustainable Development Goal (SDG): 3 - Good Health and Well-being by allowing consumers to make safer food choices and empowering vulnerable consumers with AI-based assistive technologies.
+
+Keywords: food safety, OCR, NLP, allergen detection, packaged food labels, AI system, SDG 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SDG Goal 3: Ensure healthy lives and promote well-being for all at all ages 
+
+TABLE OF CONTENTS
+
+Table of Contents
+ACKNOWLEDGEMENT	2
+ABSTRACT	3
+TABLE OF CONTENTS	4
+LIST OF FIGURES	6
+LIST OF TABLES	7
+CHAPTER 1: INTRODUCTION	8
+1.1	Introduction	8
+1.2	Problem Context	8
+1.3	Project Aim	9
+1.4	Objectives	9
+1.5	Scope	9
+1.6	Potential Benefit	12
+1.7	Overview of the IR	13
+1.8	Project Plan	14
+CHAPTER 2: LITERATURE REVIEW	15
+2.1	Introduction	15
+2.2	Domain Research	15
+2.3	Similar Systems	19
+2.4	Technical Research	21
+2.5	Summary	22
+CHAPTER 3: METHODOLOGY	23
+3.1	Introduction	23
+3.2	System Development Methodology	23
+3.3	Data Gathering Design	26
+3.4	Data Analysis	33
+3.5	Summary	46
+CHAPTER 4: CONCLUSION	47
+4.1	Achievements Reached	47
+4.2	Adequate Research and Analysis Justification	47
+4.3	Gaps and Future Enhancement	47
+REFERENCES	49
+APPENDICES	50
+Appendix A: Project Proposal Form (PPF)	50
+Appendix B: Ethics Forms (Fast Track)	52
+Appendix C: Log Sheets	55
+Appendix D: Gantt Chart	58
+Appendix E: Respondent Demographic Profile	59
+Appendix F: Turnitin Similarity Report	60
+
+
+LIST OF FIGURES
+Figure 1: Types of machine learning and sample on implementations. (Machine-Learning- Types, n.d.)	19
+Figure 2: Survey Cover Page and Introduction.	27
+Figure 3: Section A: Demographics section..	28
+Figure 4: Section B: Food Purchasing And Allergen Awareness..	29
+Figure 5: Section C: Potential System Functionalities.	30
+Figure 6: Section C: Potential System Functionalities (continue).	31
+Figure 7: Section D: Potential Enhancements..	32
+Figure 8: Responses of question 2 and 3..	33
+Figure 9: Responses of question 4, 5 and 6..	34
+Figure 10: Responses of question 7..	36
+Figure 11: Responses of question 8.	36
+Figure 12: Responses of question 9.	37
+Figure 13: Responses of question 10.	37
+Figure 14: Responses of question 11.	38
+Figure 15: Responses of question 12.	38
+Figure 16: Responses of question 13.	39
+Figure 17: Responses of question 14	39
+Figure 18: Responses of question 15	40
+Figure 19: Responses of question 16	40
+Figure 20: Responses of question 17.	41
+Figure 21: Responses of question 18.	41
+Figure 22: Responses of question 19.	42
+Figure 23: Responses of question 20.	43
+Figure 24: Responses of question 21.	43
+Figure 25: PPF Page 1.	50
+Figure 26: PPF Page 2.	52
+Figure 27: Ethics Form Page 1.	53
+Figure 28: Ethics Form Page 2	54
+Figure 29: Ethics Form Page 3	55
+Figure 30: Ethics Form Page 4	55
+Figure 31: Log Sheet 1.	56
+Figure 32: Log Sheet 2.	57
+Figure 33: Log Sheet 3.	58
+Figure 34: Gantt Chart for the IR.	59
+Figure 35: Turnitin Similarity Percentage Page 1	60
+Figure 36: Turnitin Similarity Percentage Page 2	61
+
+LIST OF TABLES
+Table 1: project planning.	14
+Table 2: Similar works for AI Allergy Systems	20
+Table 3: Demographic profile table	58
+
+CHAPTER 1: INTRODUCTION
+1.1 Introduction
+
+      Allergic reactions present an emergingly global public health problem with substantial percentages of populations being affected, notably children and those with certain dietary restrictions. Limited exposure with allergenic foods- peanuts, milk, soy, or gluten- can have diverse resultant health outcomes, including an attack of anaphylactic. Higher consumption rates of packed and processed food commodities is yet another factor for higher prevalence of allergies, whereby food ingredient names become consumers' dependency as part of attempting detection of allergens with safer food choices. (Daley et al., 2025)
+      
+      The traditional ingredient listing and food label generally restrain consumers consumption. The ingredient listing generally is in little letters, above one language announcement, and generally not in popular language. These variations render it exceedingly difficult for an individual with handicap of sight, with poor language comprehension, or an individual with inadequate health literacy to distinguish hazardous-to-health foods on ingredient listing. The above could be inserted in multiracial country with product on product in more than one language. In order to fill this divide, the project proposes an AI-driven system that helps in the identification of common allergens on food labels on packed food. The AI-driven system employs Optical Character Recognition (OCR) in determining text from images of food labels and Natural Language Processing (NLP) in determining ingredient portions of the text as well as identifying whether product ingredients contain common allergens. The system, therefore, helps in its purpose of providing real-time alerts for allergens through an easy-to-use interface. Through scanning of food and packaging for real-time alerts, the project increases the safety of food consumption while performing activities on food openness. The specific method is of benefit to allergics, and caregivers of children-at-risk, and health-aware consumers. The benefit is provided through an easy-to-use app that provides real-time advice regarding allergen presence in food. (Siyi Shangguan et al., 2018)
+
+1.2 Problem Context
+
+     Despite the legal requirements that mandate the labeling of ingredients causing allergic reactions on product packaging, common labeling practices often fail to meet the needs of a diverse consumer population. Small print, inconsistent labeling styles, and ingredient lists displayed in multiple languages make it difficult for consumers to quickly and accurately identify allergenic ingredients. This challenge is further intensified in busy retail environments, where consumers have limited time to inspect packaging in detail. (Blom et al., 2021)
+
+     Mobile phones and allergen identification applications (Georgina et al., 2018) have attempted to address this problem through various approaches; however, their effectiveness often depends on a stable Internet connection - something that may not be available in areas with poor or no coverage. Additionally, some of these solutions are overly complex for mass public use, requiring specialized knowledge or multiple steps to generate results. These barriers leave individuals with allergies or specific dietary needs vulnerable to accidental exposure to harmful substances. 
+     Such limitations stand in direct contradiction to the United Nations Sustainable Development Goal (SDG) 3: ensuring healthy lives and promoting well-being for all (Goal 3 | Department of Economic and Social Affairs, 2025). Without accessible, affordable, and accurate allergen identification technology, vulnerable groups remain insufficiently protected. The proposed solution addresses this gap by developing a machine learning-based offline system that provides real-time alerts on the presence of allergens through image inputs of packaging. This approach empowers consumers to make safer, healthier food choices, regardless of Internet availability or label complexity.
+
+1.3 Project Aim
+
+      To establish an AI capable allergen detection tool utilizing OCR and NLP to interpret packaged food product labels with the goal of detecting common allergens (peanuts, tree nuts, fish, shellfish, soy, wheat, dairy, egg) and conveying immediate alerts in both online and offline environments.
+
+1.4 Objectives
+The project's objectives are as follows:
+
+* To create an easy-to-use interface for uploading packaged food product label images for real-time alerts on allergens.
+* To extract ingredient text from product label images and perform manipulation using OCR engines like Tesseract or EasyOCR.
+* To detect frequent allergens by comparing, between the extracted ingredient text and the predefined list of keywords, using Natural Language Processing.
+
+1.5 Scope
+
+        Figure 1: Relationship between NLP and OCR
+        
+      
+      On this project, we propose to build an AI system for allergen detection for identifying common allergens in packaging labels. The system would employ OCR for texts extraction and NLP for allergen detection. This application will be constructed to work offline so that it can be used in areas with poor to no internet connectivity.
+     Tasks to be carried out:
+* Create a collection of packaged food label images, and annotate them with allergen information.
+* Pre-process images to make text more readable for OCR extraction, perhaps by using OpenCV or PIL.
+* Use OCR via either Tesseract or EasyOCR for ingredient text extraction from multilingual food labels.
+* Develop an allergen dictionary pre-filled with keywords and synonyms ("milk," "lactose," "casein," etc.) for matching.
+* Use NLP techniques for detecting allergens from extracted texts.
+* Develop the user interface using Streamlit or a web framework (Flask/Django) to enable users to upload images of labels and receive allergen alerts in real time.
+* Evaluate the system performance using accuracy, precision, recall, and F1-score. 
+
+Constraints: 
+* The system will focus only on allergen detection of packaged snack products. 
+* It does not include barcode scanning, mobile application deployment, or high-level multilingual semantic translation of food labels in its first phase. 
+* Dataset size will be limited to a reasonable size for development and testing due to availability of time and resources. 
+
+Inclusions: 
+* Image based allergen detection of printed food labels on food packaging. 
+* Offline allergen detection without internet. 
+
+Exclusions: 
+* Scanning hardware for real-time inspection. 
+* Allergen detection from unlabelled, fresh, or food made from restaurants. 
+* Legal/Regulatory compliance requirements for food manufacturers. 
+
+Targeted Users: 
+* Users with food allergies or dietary restrictions. 
+* Parents/caregivers responsible for keeping track of what children eat. 
+* Health conscious consumers that want to take charge of ingredient transparency. 
+* Public Health advocates/NGOs that encourage safe food practices.
+
+Model Deployment: 
+
+     The system will be deployed as a desktop or browser-based application capable of offline capabilities, which will allow for personal use and community use without the need from high-speed internet. The possibility of a mobile deployment will also be considered in the future to increase general use, especially for allergen detection while on the go, but this is not a guaranteed deliverable for the current development phase.
+
+     
+1.6 Potential Benefit
+
+
+Tangible Benefits
+
+* Enhanced Food Safety: Provides correct and quick allergenic discovery from packaged food labels, limiting accidental exposure to allergens.
+* Offline Capabilities: Users can access allergenic detection, even in environments with low or no internet resulting in higher reliability.
+* Cost-Effective Product Offering: End words uses open-source OCR and NLP tools resulting in cost savings in development and ongoing operational costs.
+* Scalable Product Design: Future development to include discovery of more allergens, support for more languages, or integration into mobile offerings could be included in updates.
+
+Intangible Benefits
+
+* Greater Consumer Confidence: Gives an individual who has food allergies or dietary restrictions knowledge when making a purchase. 
+* Public Health Impact: Can have a larger impact on health initiatives promoting health by keeping consumers informed and debunking less safe practices. 
+* User Convenience: Shortens the task of detecting potential allergens from manual label inspection to recognition by an automated process.
+* Awareness and Education: Increases awareness and understanding of food allergens for the consumer and caregivers as well as health-conscious consumers.
+1.7 Overview of the IR
+
+
+CHAPTER 1: INTRODUCTION
+
+      Chapter 1 sets the background for the entire project, delivering the context, problem setting, and rationale for addressing the issue of allergen detection in food labeling. It then goes ahead to explain the aim of the project, objectives, scope, and expected results, emphasizing the significance of the study and how it relates to the Sustainable Development Goal (SDG) (THE 17 GOALS | Sustainable Development, 2015) that this research hinges on. This chapter allows the reader to recognize the relevance of the project and how it affects public health.
+CHAPTER 2: LITERATURE REVIEW
+
+      This chapter is a comprehensive literature review of previous studies, technology developments, and present solutions for allergen detection. The chapter describes the current use of Optical Character Recognition (OCR) and Natural Language Processing (NLP) techniques, their shortcomings, and identifies areas of lack in the present systems. Conclusions reached here serve as a justification for the solution developed and set the platform for the methodology.
+CHAPTER 3: METHODOLOGY
+
+      Next in Chapter 3, the report elaborates on the research methodologies, detailing the data collection methods, image processing, OCR implementation, and allergen detection using NLP. Why the specific technologies such as Tesseract and EasyOCR were selected is also discussed. Apart from that, this chapter provides the criteria to be employed in measuring the performance of the system, which are efficiency and accuracy.
+CHAPTER 4: CONCLUSION
+
+      Lastly, Chapter 4 summarizes the Investigation Report with what was learned from the literature and methodology discussions. It also looks back on the problems encountered and gives recommendations for future undertakings. This would provide a seamless development stage in the next semester, from research to system implementation.
+
+1.8 Project Plan
+
+Name of TasksDurationsStart DateEnd DateStatusProject Proposal Form3 daysSun 01/06/25Tue 03/06/25CompletedQuestionnaire Form Preparation2 daysMon 23/06/25Tue 24/06/25CompletedQuestionnaire Form Collection6 daysWed 25/06/25Mon 30/06/25CompletedEthics Form1 daysSat 01/07/25Mon 01/07/25CompletedACKNOWLEDGEMENT1 dayWed 02/07/25Wed 02/07/25CompletedABSTRACT1 dayWed 02/07/25Wed 02/07/25CompletedCHAPTER 1: INTRODUCTION2 daysWed 02/07/25Thu 03/07/25CompletedIntroduction2 daysWed 02/07/25Thu 03/07/25CompletedProblem Background2 daysWed 02/07/25Thu 03/07/25CompletedProject Aim2 daysWed 02/07/25Thu 03/07/25CompletedObjectives2 daysWed 02/07/25Thu 03/07/25CompletedScope2 daysWed 02/07/25Thu 03/07/25CompletedPotential Benefit2 daysWed 02/07/25Thu 03/07/25CompletedOverview of the IR2 daysWed 02/07/25Thu 03/07/25CompletedProject Plan2 daysWed 02/07/25Thu 03/07/25CompletedCHAPTER 2: LITERATURE REVIEW3 daysFri 04/07/25Sun 06/07/25CompletedIntroduction3 daysFri 04/07/25Sun 06/07/25CompletedDomain Research3 daysFri 04/07/25Sun 06/07/25CompletedSimilar Systems/ Works3 daysFri 04/07/25Sun 06/07/25CompletedTechnical Research3 daysFri 04/07/25Sun 06/07/25CompletedSummary3 daysFri 04/07/25Sun 06/07/25CompletedCHAPTER 3: METHODOLOGY3 daysMon 07/07/25Wed 09/07/25CompletedIntroduction3 daysMon 07/07/25Wed 09/07/25CompletedSystem Development Methodology3 daysMon 07/07/25Wed 09/07/25CompletedData Gathering Design3 daysMon 07/07/25Wed 09/07/25CompletedAnalysis3 daysMon 07/07/25Wed 09/07/25CompletedSummary3 daysMon 07/07/25Wed 09/07/25CompletedCHAPTER 4: CONCLUSION1 dayThu 10/07/25Thu 10/07/25Completed  Achieved, justification of research quantity1 dayThu 10/07/25Thu 10/07/25CompletedGaps in research and design1 dayThu 10/07/25Thu 10/07/25CompletedAppendix2 daysSat 12/07/25Sun 13/07/25CompletedProject Proposal Form2 daysSat 12/07/25Sun 13/07/25CompletedEthics Forms2 daysSat 12/07/25Sun 13/07/25CompletedLog sheets2 daysSat 12/07/25Sun 13/07/25CompletedGantt Chart2 daysSat 12/07/25Sun 13/07/25CompletedRespondence Demographic Profile2 daysSat 12/07/25Sun 13/07/25CompletedTable 1: project planning.
+
+CHAPTER 2: LITERATURE REVIEW
+2.1 Introduction
+      This chapter presents a literature review of the technologies and research literature on allergen detection with a focus in the context of food safety on the usage of Optical Character Recognition (OCR) concepts and Natural Language Processing (NLP). Discussions of the theoretical concepts of OCR and their potential applications in real-world detail comprise part of this chapter, including an explanation of how OCR operates around extracting text from food labels and how NLP approaches can be used to distinguish allergens. The review will also discuss the existing allergen detection systems and their limitations, specifically related to packaged food products. The review will explore the techniques used in the various approaches to improve text extraction, and how machine learning or keyword-based systems are currently used to detect food allergens. While the review will identify gaps in current systems, it will also articulate how the proposed system would provide a more convenient effective AI approach to allergen detection. The aim of the review in Chapter 2 is to contextualize the methodology and tools developed and explored in the following chapters. This review will point out how current systems are functioning under capacity, and highlight the need for more complex, seamless solutions that will serve consumers with dietary restrictions better.
+
+2.2 Domain Research
+
+
+     Food Safety and Artificial Intelligence (AI)
+      Artificial Intelligence, in the form of Optical Character Recognition (OCR) and Natural Language Processing (NLP), plays a significant role in the examination and interpretation of large amounts of unstructured data, such as ingredient labels on packaging. In allergen detection, AI would allow for automated identification of critical ingredients and cross-matching these with allergen databases to capture potentially harmful materials. AI-based solutions are capable of reducing the influence of human error, reducing the time to allergen detection, and increasing overall accuracy. The ability to analyze ingredient lists using machine learning models improves food safety by further empowering consumers with timely and accurate allergen information. (Sathishkumar Kuppusamy et al., 2024)
+
+
+
+
+     Optical Character Recognition (OCR) for Ingredient Labeling
+      OCR technology converts imaged or scanned text into machine-readable form, enabling the capture of ingredient information from food labels. The Tesseract OCR and EasyOCR are widely used for such purposes. The biggest challenge is selecting the most effective OCR tool that can handle multilingual ingredient labels and keep accuracy high. OCR allows the food label images to be translated into structured text that can be processed further for allergen identification. Accurate OCR is essential to ensure allergen detection is reliable, especially where ingredients are labeled in varied forms or languages. By boosting the accuracy and access of ingredient data, OCR enhances transparency in food labeling, facilitating the attainment of SDG Goal 3 through helping consumers make knowledgeable and safer food choices. (Hansi Seitaj & Vinayak Elangovan, 2024)
+
+     Natural Language Processing (NLP) for Detection of Allergens
+     
+      NLP is the answer to processing and analyzing human language in a structured way. In detecting allergens, NLP techniques are used in a way that ingredient texts are processed as well as specific allergens detected, irrespective of whether synonym or different spellings are used. Typical NLP methods including tokenization, lemmatization, and named entity recognition (NER) help in the detection of allergens like "milk," "lactose," "casein," and "whey." With NLP, the system can compare ingredient text with a preconfigured list of allergens and detect potential allergens even where they appear in non-standard terms. By producing a more sophisticated conceptualization of ingredient text, NLP helps in reducing the chances of false-negative allergen detections, which has a direct relation with food safety. (Stryker & Holdsworth, 2024)
+      
+     Allergen Databases and Keyword Matching Algorithms
+      There are predefined allergen databases such as the US Food and Drug Administration (FDA) allergen list used to compare against ingredient lists broken down by OCR. Ingredient names are compared against allergen keywords, and possible risk is noted. This approach reduces human error and offers consistency in detecting allergens in different food products. By using algorithms for matching keywords, the system can quickly and efficiently identify harmful substances, improving the overall speed and efficiency of allergen detection. (Program, 2024)
+      
+      
+      
+      
+      
+     Challenges in Multilingual Label Processing
+      One of the key challenges in allergen detection is the multilingual nature of food labels. Many countries require that food labels be written in multiple languages, and AI systems need to accurately process these labels (Assiri, Fatmah Y et al., 2025). OCR tools and NLP techniques must be adapted to handle text in various languages, including non-Latin scripts. To address this, the system can integrate machine translation or use multilingual OCR models that can process ingredient lists in several languages. By overcoming the challenge of multilingual labels, this project ensures that food safety information is accessible to a broader audience, which is essential for global public health initiatives and achieving SDG Goal 3. The ability to accurately detect allergens across multiple languages ensures that consumers, regardless of their linguistic background, can make safe and informed food choices. 
+
+     User Experience and Interface Design
+      A user-friendly interface is crucial for the successful adoption of any technology (Cheng et al., 2007), especially in the context of allergen detection, where users may not have technical expertise. The system's interface will be designed to allow individuals to upload food label images easily and receive real-time allergen alerts. Tools like Streamlit or Flask/Django will be used to create an interactive and simple UI that makes allergen detection accessible to a wide range of users, including those with food allergies, parents of children with allergies, and health-conscious consumers. The project's success depends on how well consumers can interact with the tool and trust the results.
+     
+     Web Platform Integration of AI
+      Integration of the allergen detection tool with web platforms is possible, thus enhancing the usability of the system based on scanning and analysis of product labels in real-time. Some of the integration options are discussed below for web applications, or also the potential of using the tool to run on mobile platform. By enabling consumers to use allergen detection software on their PC or web-enabled devices, the system can be utilized in various real-world scenarios, like when shopping or when browsing food products on the internet. The web platform convergence will help increase the reach and impact of the tool, supporting SDG Goal 3: Good Health and Well-being by enabling users to have more control over their health and avoid the risks of allergic reactions wherever they go and whichever device they use.
+
+
+
+     Privacy and Security Concerns
+      Privacy and security of information are paramount when dealing with consumer data, especially where the system hinges on user interactions and inputs of data (Paul, 2024). This section will address how the users' information privacy is ensured when applying the allergen detection tool. The aspects to be considered might include GDPR compliance, anonymization of data, and secure storage of data protocols. Since the tool does not handle personally identifiable data or sensitive health data, the issue at hand will be ensuring food label data is kept safe and only made available for its intended purpose. By providing protection of data and privacy, the system establishes trust in the technology so that users will feel safe when using it. (General Data Protection Regulation (GDPR) - Final Text Neatly Arranged, 2016)
+      
+     Conclusion
+      The advances made in AI, OCR, and NLP using the various technologies and studies related to them as discussed in this chapter are critical to designing a feasible system to accurately detect allergens in food (Palvadi, 2024). By utilizing Optical Character Recognition (OCR) to extract the text from the document, supplemented by Natural Language Processing (NLP) to identify the allergens, this project addresses significant aspects of food safety in situations where food allergies are involved. Additionally, using machine learning algorithms to improve the accuracy and reliability of allergen detection and using multilingual technologies, can better ensure the usability of this system for more people. Nevertheless, there are still challenges our project is attempting to solve such as improving OCR accuracy on images not taken in the best quality, deciphering long and complicated ingredient lists in various languages, and applying machine learning algorithms to train on very small sample sizes. This project will successfully navigate these challenges by taking advantage of couplings state-of-the-art technologies, while achieving an overall purpose of improving food safety overall.
+
+2.3  Similar Systems
+
+Table 2: Similar System in AI used.
+
+
+Authors
+Domain Model Training MethodsTechnic and data model used
+Key Features
+Findings
+
+
+
+(Sneha Lodha et al., 2025)
+
+
+
+
+Food Safety
+
+
+
+OCR and Machine Learning Model
+Tesseract OCR for text extraction, Supervised Machine Learning for allergen classification
+
+Real-time detection of allergens, Personalized allergy alert
+
+Successfully identified the allergens with high precision, especially from scanned labels
+
+(Fabio et al., 2018)
+Food Labeling
+Optical Character Recognition
+
+
+Machine learning working with label-based dataset, NLP for allergen keyword matching
+
+
+Rescans packaged foods, identifies allergens from a trained database
+
+Highly precise in allergen identification, especially for common allergens like peanuts, milk, gluten
+	
+(OCR and NLP Based Personalized Allergen Notifying System - IJSREM, 2025)Health and NutritionAI-Powered Ingredient Detection System
+Supervised learning model with integrated OCR, NLP for synonym detection, and allergen mappingIngredient recognition, identification to allergens, food classification
+Achieved high classification accuracy of 91% that allows faster allergen detection
+In Summary:
+      It can be seen from the table that the scope of operation in allergen detection systems revolves predominantly around accuracy and real-time processing. For systems used in food safety, such as allergen detection in food packaging, accuracy is paramount since users rely on the system to be capable of determining that they are using safe products. The ability to detect the allergens in the correct manner and prevent accidental exposure is necessary, especially for individuals with potentially life-threatening allergies. However, real-time processing is also necessary in a simple-to-use system so that the consumers can quickly scan and receive results as they shop without any holdup. Several technologies such as OCR and machine learning are employed to harness ingredient text and identify allergens. The accuracy of these systems depends on the efficiency of the OCR tool being used and the robustness of the allergen database. Tesseract and EasyOCR are commonly used tools for text recognition, while spaCy and NLTK are primarily engaged in allergen recognition using NLP. In allergen detection systems, it is necessary to accurately match ingredients with allergens in environments of low-quality image and non-standard ingredient names. In comparison, LLMs, as robust as they are in natural language comprehension, require domain-knowledge fine-tuning to provide the degree of accuracy required in identifying allergens. With the knowledge graphs of particular allergens, the system can be fine-tuned to enhance the identification of suspected allergens on food packaging. This is to further clarify that LLMs themselves are not imprecise but that with appropriate training and domain knowledge, their ability can be optimized.
+
+2.4  Technical Research
+2.4.1  ?Physical Hardware
+
+      The allergen detection system will require hardware in addition to software for interpreting images of food labels and identifying allergens. Hardware Requirements Computer/Laptop: A computer or laptop with a minimum Intel i5 processor and 8GB RAM will be used for testing models, processing data, and software programming. The processing requirement from the system is moderate because it entails extraction of images, processing of text, and model testing on small to medium scale. Camera (Optional for Future Integration): A camera can be added to enable the real-time scanning of labels, but this feature will not be part of the initial prototype.
+
+2.4.2  ?Programming language
+
+      Python: Python will be employed as the primary programming language due to its rich libraries and support of OCR, NLP, and machine learning processes.
+      
+OCR Tools (Tesseract or EasyOCR): Tesseract or EasyOCR will be used to perform Optical Character Recognition (OCR) to obtain the text from images of food labels. Both tools are open-source and highly effective for recognizing printed text.
+
+NLP Libraries (spaCy/NLTK): Allergen detection will be done using NLP. spaCy and NLTK libraries will be used for tokenization, lemmatization, and named entity recognition (NER) to identify allergens.
+
+Streamlit/Flask: For UI purposes, Streamlit is optimal for quick development of web-based interactive applications, while Flask can be used for a more robust solution if needed.
+
+2.4.3  ?Libraries and tools
+
+* Tesseract or EasyOCR (OCR Libraries): The text from food label image captures will be pulled using Tesseract OCR. EasyOCR is also an option which supports multiple languages and therefore could handle pretty varied structures of labeling.
+* spaCy/NLTK (NLP Libraries): spaCy because it is fast and efficient in processing large volumes of texts and NLTK which is to help with basic NLP operations, mainly tokenization, and even simple synonym detection.
+* OpenCV/PIL (Preprocessing Tools for Images): OpenCV will be utilized to perform image preprocessing tasks such as resizing and filtering noise to pre-process the input for optimal OCR. PIL (Pillow) will be used for simple image operations.
+* pandas/NumPy (Data Manipulation Utilities): pandas and NumPy will be used to manipulate and work with data in order to process text data and organize outcomes.
+
+2.4.4  ? IDE (Interactive Development Environment) Chosen
+
+      PyCharm shall be the core IDE for Python development since it possesses the full range of features such as debugging, code completion, and virtual environment support. Visual Studio Code (VS Code) may also be used for light editing, especially Python scripting and web development, since it is multipurpose and supports extensions.
+      
+2.4.5  ?Operating System
+
+      The development is going to take place mainly on Windows 11 because of its compatibility with the necessary software and tools. The system is built on the fact that Python, OpenCV, and the library that was selected for OCR/NLP are all developed and supported fully on the Windows operating system. Therefore, Windows will be used for development. The system will be designed to comply with the other major operating systems for deployment in future.
+
+2.5 Summary
+
+      In this chapter, the hardware and software requirements of the system for detecting allergens were explained and justified. The chosen tools like OCR and NLP libraries are accessible and appropriate for the requirements of the project. The chapter enumerated the technical requirements at minimum and described how each tool was selected to satisfy the technical requirements. With the proper hardware and software infrastructure selected, the project is prepared for effective development and successful implementation.
+
+CHAPTER 3: METHODOLOGY
+3.1 Introduction
+
+      Methodology is an important aspect in ensuring the project flows smoothly. It determines the approach and actions necessary to carry out the activities along the various stages (Ali Khan et al., 2023). In this chapter, the research will explain the system development methodologies used in this project, the available different methodologies, and the rationale for selecting the most suitable one for this research. The chapter will also provide a clear explanation of the processes employed, for instance, data collection, system design, and the approach taken to examine the performance of the system. The adopted methodology will be appropriate to the project aims and guarantee that all activities are executed successfully and effectively, addressing the root problem and generating the intended outcomes.
+
+3.2 System Development Methodology
+
+3.2.1  ?Introduction of methodology  
+
+      System development methodology is the framework used to manage the entire process of creating, building, and deploying the system for the detection of allergens. The methodology dictates how each phase of the project will be executed so that activities are done in a structured and efficient manner (Ikbal, 2023). In this section, we are going to present the selected methodology for the project, explaining the stages and steps followed to develop the system. The chosen methodology will be adequately justified on the basis of what the project needs, its objectives, and the type of problems it is expected to address. With a suitable development methodology, the project is able to go in the right direction with set milestones and goals at each step of the way.
+      In keeping with the methodology for this project, Rapid Application Development (RAD) has been adopted. RAD is an iterative and adaptive methodology that focuses on rapid prototyping with feedback from users and continuous improvement (What Is Rapid Application Development? (RAD Methodology) | Built In, 2024). This methodology fits very well for this project because it enables the development team to create working parts early, get some form of user input on usability and features, and iteratively improve the system in short cycles. This guarantees that the allergen detection tool is what users expect, fulfills actual needs adequately, and can be finished within the project's finite time scale without any compromise on quality or flexibility.
+
+3.2.2  ?Methodology Choice and Justification
+
+      Rapid Application Development (RAD) technique is selected for this project because it suits best projects that have to be deployed in a hurry, feature interactive user participation, and are polished in incremental cycles. Allergen detection requires a technique that can polish itself depending on the evolving user feedback without sacrificing speed and development efficiency. RAD's emphasis on prototyping and producing working pieces in rapid cycles is best poised to address the need for early and regular testing of the system's functionality. This is made possible via the four phases of RAD - requirements planning, user design, construction, and cutover (Kolosky, 2024) - since they allow for the stakeholders, such as individuals with food allergies and caregivers, to be included right from the beginning. They are able to make contributions easily incorporated into the design and functionality, reducing the risk of incompatible expectations.
+      In addition, RAD minimizes the time consumed for massive start-up documentation, favoring working models and concrete advance. It is particularly effective under the constraints of the short semester timeframe, enabling the system to realize a working environment within a relatively short time with room for adjustments. With RAD, the project achieves improved user satisfaction, ensures the final deliverable is functional in real-time situations, and delivers a quality solution within time constraints.
+
+3.2.3  Activities and Processes
+
+	The Rapid Application Development (RAD) methodology consists of four phases - Requirements Planning, User Design, Construction, and Cutover (Kolosky, 2024). For the allergen detection system, all phases will be tailored to accomplish speedy development, continuous feedback, and effective delivery within the semester timeline.
+
+Requirements Planning Phase
+Activities:
+*  Conduct a survey with the volunteers (individuals with food allergies, caregivers, and health-conscious consumers) to identify what they require and what their pain points are.
+*  Identify main features such as image uploading, ingredient extraction, allergen keyword detection, and result presentation. 
+*  Gather any other feature suggestions, such as multilingualism or more interpretable alert messages.
+*  Decide on technical necessities such as OCR integration, keyword databases, and real-time feedback systems. 
+*  Set clear project objectives, scope, and constraints to fulfill the feasibility within the given duration.
+Process:
+1) Hold short meetings or surveys with target users to get feedback.
+2) Fill in the feature list in terms of user importance and priority.
+3) Document requirements in a straightforward format as a development guide.
+
+User Design Phase
+Activities:
+*  Create wireframes and mockups of the user interface, keeping it user-friendly and accessible to all ages.
+*  Involve users to test design prototypes for the verification of usability expectations. 
+*  Map the navigation flow of the system with consideration of rapid and conclusive allergen detection results.
+*  Create an allergen keyword database for integration in the backend. 
+Process:
+1) Use online design tools for the creation and iteration of interface mockups.
+2) Gather direct user feedback on designs and iterate as needed before coding begins.
+3) Design with the potential for web and future mobile integration in mind.
+
+Construction Phase
+Activities:
+*  Develop the backend functionality, including image processing, text extraction, and allergen keyword matching.
+*  Build the frontend interface using tools such as Streamlit or a web framework for quick deployment.
+*  Test internally so that uploaded images return accurate allergen detection results. 
+*  Iterate the system based on user feedback from prototype tests continuously.
+Process:
+1) Divide development into extremely small, manageable pieces with daily or weekly progress checks.
+2) Test every feature as it's implemented to avoid error accumulation.
+3) Keep in touch with potential users for input regarding the prototypes in real time.
+
+Cutover Phase
+Activities:
+*  Conduct final system testing with a subsample of target users to validate usability and accuracy.
+*  Address any issues uncovered during testing, especially those related to allergen detection accuracy or usability for users.
+*  Create deployment documentation and user guides for operating the system.
+*  Deploy the final version for demo and evaluation.
+Process:
+1) Perform both functional and user acceptance testing (UAT) to ensure readiness.
+2) Train potential users if required, especially for accessing results and understanding alerts.
+3) Confirm all technical and functional requirements from the planning stage are met.
+
+3.3 Data Gathering Design
+
+      A survey is a factual data gathering tool used to get information from a subject population using an arranged list of questions (Bhandari, 2021). The research uses a survey method to gain feedback regarding the user interface and functional requirements of an allergen detection system. The purpose of this survey is to establish how consumers interact with food packaging, what they would anticipate from an allergen detection device, and what features are most significant in such a device. The survey is done ethically and has been signed off by the project supervisor to guarantee participant opinions are used accordingly. 
+      The questionnaire consists of 4 parts, e.g., Demographic Profile, Food Purchase and Allergen Awareness, Potential System Features, and Last Feedback. The questionnaire includes multiple-choice and open questions to gather both quantitative and qualitative information. The questionnaire shall capture responses from individuals with varying levels of food allergy and food limitations to ensure the system meets various customers' requirements.
+
+
+The design of the cover page in the survey and the 20 questions are shown below:
+
+Cover Page and Introduction
+
+        Figure 2: Survey Cover Page and Introduction.
+      The introduction of the survey shows the terms and conditions of the research and their rights to participate in this survey. Respondents are already informed that they are participating as a voluntarily, they can stop participating in any point, there is no risk participant in the survey and all the responses will be strictly confidential and used for academic purposes in the project.
+
+
+
+        Figure 3: Section A: Demographics section.
+
+
+
+      The demographics will contain information about the participant to assist in the analysis section.
+
+
+
+        Figure 4: Section B: Food Purchasing And Allergen Awareness.
+
+
+Figure 5: Section C: Potential System Functionalities.
+
+
+
+
+
+
+
+
+
+
+
+Figure 6: Section C: Potential System Functionalities (continue)
+
+
+
+Figure 7: Section D: Potential Enhancements.
+3.4 Data Analysis
+      The research will analyze the 30 responses using the question that were prepared on the data gathering section.
+
+
+Section A: Demographic
+
+
+Figure 8: Responses of question 2 and 3.
+
+
+
+Figure 9: Responses of question 4, 5 and 6.
+
+      For the Gender, The majority of the respondents who answered were male (90%), while there were only 10% female participants. This means that the sample is heavily biased towards male participants, and this could influence the perspective and likes in the results. Also for the age groups, Most respondents (83.3%) were aged 18-24, followed by 25-34 at 13.3%, and a small proportion under 18. This indicates that the feedback primarily reflects the younger adult demographic, who are likely more tech-savvy and open to using digital tools for allergen detection. Moreover, The most prominent representation of the respondents was Yemen at 30%, followed by Yemen (duplicate entry) at 16.7%. Then there were other nationalities such as India, Bangladesh, Egypt, Jordanian, and Syria at relatively fewer numbers (3.3% each). This shows that the instrument would require cross-cultural and multilingual usability. Lastly, All the respondents (100%) reported having or knowing someone with a diagnosed food allergy. This confirms the appropriateness of the target audience and implies high potential interest in an allergen detection system.
+      
+      For having allergy or not, All the respondents (100%) reported having or knowing someone with a diagnosed food allergy. This confirms the appropriateness of the target audience and implies high potential interest in an allergen detection system. The most common allergens identified were milk and gluten (both 26.7%), followed by soy and peanuts (20% and 16.7%, respectively). The less common allergens identified were beans & soy, eggs, and fish (3.3% each). This reinforces the need to place utmost importance on these allergens in system development.
+
+
+
+
+
+
+
+
+
+
+
+
+Section B: Food Purchasing And Allergen Awareness.
+
+
+Figure 10: Responses of question 7.
+
+From Question 7, The majority (73.3%) firmly agreed and 26.7% agreed that they regularly read food labels before purchasing packaged snacks. This shows that the target users are already hip to allergen awareness but would maybe welcome an easier way of reading labels.
+
+
+Figure 11: Responses of question 8.
+
+      From questions 8, 60% strongly agreed and 33.3% agreed that they can't read or easily read ingredient lists. This confirms an inherent problem that the system to be proposed will address.
+
+
+
+
+Figure 12: Responses of question 9.
+
+Half of the respondents (50%) firmly agreed and 36.7% agreed that food labeling is sometimes printed in fonts or sizes that are hard to read. This suggests that font size and readability are significant barriers to good allergen identification.
+
+
+Figure 13: Responses of question 10.
+
+      For Question 10, A total of 46.7% agreed or firmly agreed that they find it difficult due to multilingual or unclear labeling. This suggests that multilingual processing capability should be present in the system.
+      
+
+Figure 14: Responses of question 11.
+
+      For question 11, 46.7% of respondents agreed and 30% strongly agreed that they have made accidental purchases of products containing allergens due to ambiguous labelling. This emphasizes the necessity of an accurate and reliable allergen detection device to prevent such incidences.
+
+
+
+
+Section C: Potential System Functionalities.
+
+
+Figure 15: Responses of question 12.
+
+
+      From Question 12, The overall approval for the allergen detection feature was evident from the survey, given an average rating of 3.73. While most people rated it 4 (36.7%) and 5 (26.7%), there was also some scope for improvement, as 16.7% rated it 2 and 20% rated it 3.
+      
+      
+
+Figure 16: Responses of question 13
+      
+      From responses to question 13, The rating of survey results for highlighting identified allergens on the label is intermediate, with a mean score of 3.67. The highest two scores of 4 and 5 were each 30%. However, 16.7% awarded it 2 and 3.3% awarded it 1, which speaks of an intermediate level but room for improvement.
+
+
+Figure 17: Responses of question 14.
+      From Question 14, Multilingual support for reading ingredient labels was well received, with the average score being 3.77. Both ratings of 4 and 5 each had 30% of the responses. However, 6.7% responded with 2 and 3.3% responded with 1, indicating that while a high percentage of customers are happy, there is still room for improvement.
+
+Figure 18: Responses of question
+      
+      From Question 15, The rating of the feature to save frequently identified allergens from the survey is very high, with the mean being 3.97. The responses were predominantly positive, with 36.7% rating it 5 and 33.3% rating it 4. As few as 10% rated it 2, and nobody rated it 1, reflecting widespread satisfaction with the feature overall.
+      
+
+Figure 19: Responses of question 16.
+
+
+
+      From Question 16, Clear warnings or alerts when allergens are present have a favorable reaction in the survey answers, averaging 3.77. The most common response (53.3%) was 4, and then 20% provided a 5. A further 10% provided a 2, and 3.3% a 1, so there is room for development here.
+      
+
+Figure 20: Responses of question 17.
+
+      From Question 17, The online survey results for the offline mode without internet connectivity are positive, with a mean value of 3.83. Most people (33.3%) gave it a rating of 5, while 30% gave it a rating of 3. There is a bit of scope for improvement, with 10% giving it a rating of 2, but nobody rated it the lowest of 1.
+      
+
+Figure 21: Responses of question 18.
+      From questions 18, The results of the survey regarding the capability to use the system on web and mobile platforms are highly positive, with a mean of 4.40. 60% rated it 5, followed by 26.7% rating it 4. 3.3% alone rated it 1, reflecting high approval and satisfaction towards cross-platform capabilities.
+
+
+
+Section D: Potential Enhancements
+
+
+Figure 22: Responses of question 19.
+      In Question 19, the results of the survey for improvements indicate that the favored features are:
+* Option for filtering according to dietary preference (63.3%)
+* Voice notification of detected allergens (53.3%)
+* Real-time label scanning using camera (56.7%)
+* Barcode scanning feature (50%)
+* Facility to share findings of allergen detection with others (36.7%)
+
+All these features show a high demand for dietary preference customization, the ability to scan in real time, and share.
+
+
+Figure 23: Responses of question 20.
+      From Question 20, The results of the survey show keen interest in the system, with 73.3% of those surveyed indicating they would be interested in using it. 13.3% said "Maybe," and 13.3% said they would not be interested, reflecting high interest in the potential system.
+      
+
+Figure 24: Responses of question 21.
+      
+      Lastly from Question 21, The idea is that the system can be of greater assistance if it offers suggestions to users of alternative solutions whenever allergens are detected, giving recommendations to users of products that fit their dietary needs or safety needs.
+      
+Summary for the Analysis
+      The survey results name the top issues that consumers face while reading food labels. A significant number of the respondents (60%) found it hard to read lists of ingredients due to very small print, unreadable fonts, or multilingual labeling. This indicates that despite food labeling laws, the current system is not consumer-friendly, especially to those who suffer from allergies. More than half of the participants (50%) identified font size and legibility as obstacles to allergen identification, followed by 46.7% facing difficulty with multilingual labeling, where the necessity for multilingual support in allergen detection systems was shown.
+      According to system functions, participants were highly in favor of a real-time allergen detection system. 73.3% of them were keen on using such a system, which indicates the need for accurate and understandable allergen identification. The survey further pointed to the popularity of other features like support for customizable diet restrictions, voice notification, and real-time scanning. The people also appreciated the support for offline mode and cross-platform operability, ensuring that the utility would be helpful in different environments like stores or while on trips.
+      The results confirm that the allergen-detecting system has to be not only efficient but also user-focused with functionality streamlined for individuals with allergies and dietary limits. The poll shows extensive demand for a reliable, simply available system for recognizing allergens.
+
+
+User Requirements of the Allergen Detection System:
+
+* Multilingual functionality for supporting ingredient descriptions in different languages.
+* Offline usage with no need for an internet connection.
+* Cross-platform applicability for mobile and web usage.
+* Easy-to-use simple interface.
+* Personalized allergen profiles tailored to individual dietary needs.
+* Visible obvious warnings and alerts on detecting allergens.
+* Barcode scanning for quick allergen scanning.
+3.5 Summary
+
+      In chapter four, I have explained the research methodology that informed the design of the proposed allergen detection system. It began with an introduction which provided an appreciation of the role played by methodology in allowing various components of the project to be conducted in a systematic and rational manner. The proposed methodology was described and defined based on the project objectives, aims, scope and issues arising. More information was provided on how the methodology assists in systematic planning, designing, implementation, and testing of the system. The methodology allows a systematic approach to gathering data, which was focused on gathering user information and feedback so it was user-focused design to meet future users' requirements. An established and well-known methodology has been developed thereby allowing preparation for the implementation of the project in sequential steps
+
+CHAPTER 4: CONCLUSION
+4.1 Achievements Reached
+      The development foundation, requirement gathering, and planning of the system were included in phase one of the project. All existing literature was reviewed to understand the problems in the identification of allergens in packaged foods and also understand potential solutions through technology (Adedeji et al., 2024). This was alongside research into similar systems, related algorithms, and recent developments in Optical Character Recognition (OCR) and Natural Language Processing (NLP) and general means of improving food safety.
+      Critical project documentation was completed, including the Project Proposal Form (PPF), ethics form, and user questionnaire design. The questionnaire was prepared and sent to the target audience for obtaining useful information on user needs, expectations, and probable features. Feedback through the survey provided useful information on functional and non-functional requirements, usability factors, and possible additional improvements.
+      In addition, the system development approach selected was rationalized and formalized, giving a structured pathway for the remaining stages of the project. By these achievements, the project has progressed from its conceptual stage into an adequately prepared development phase, having a direction and user-defined requirements.
+
+4.2 Adequate Research and Analysis Justification
+      Research conducted at the initial stage set a solid foundation for the allergen detection system. Literature surveyed looked into the prevalent AI technologies including OCR and NLP, and issues it identified in prevalent systems, including multilingual support, availability, and user experience. The outcomes of the survey further supported these challenges, where users appreciate the real-time detection of allergens and levels of customization.
+      This research is closely related to SDG Goal 3: Good Health and Well-Being (Goal 3 | Department of Economic and Social Affairs, 2025) as it aims to improve food safety by giving an allergy-sensitive individual a more informed choice aid to make safer food decisions. By offering solutions to tangible problems listed through user feedback and literature, the system will strive to reduce health risks stemming from food allergies.
+
+
+4.3 Gaps and Future Enhancement
+      Despite the good groundwork laid by the initial research and design phase, there are a number of areas that can be tapped and developed further. One such gap is the absence of comprehensive testing of the allergen detection system across different types of product packaging and languages. Subsequent studies can be focused on enhancing the system's accuracy further for interpreting non-standard labels and conforming to different font sizes.
+      A second primary area of enhancement is the system's real-time scanning feature in situations involving mixed lighting conditions or low-resolution images. Ensuring the system functions well under such circumstances will be critical to user adoption (Zhou et al., 2025).
+      In addition, even though the system is user-friendly, further user testing needs to be conducted to further enhance the interface so it is even more intuitive to use, particularly for vulnerable groups like the elderly or visually impaired.
+      Filling these gaps will also further solidify the system's alignment with SDG Goal 3 (Goal 3 | Department of Economic and Social Affairs, 2025) by making it more accessible, reliable, and useful in everyday life towards good health and well-being.
+
+REFERENCES
+* Daley, S. F., Lopez, C. M., & Mendez, M. D. (2025, May 5). Food Allergies. Nih.gov; StatPearls Publishing. https://www.ncbi.nlm.nih.gov/books/NBK482187/
+* Siyi Shangguan, Ashkan Afshin, Shulkin, M., Ma, W., Marsden, D., Smith, J., Saheb-Kashaf, M., Shi, P., Micha, R., Imamura, F., & Dariush Mozaffarian. (2018). A Meta-Analysis of Food Labeling Effects on Consumer Diet Behaviors and Industry Practices. American Journal of Preventive Medicine, 56(2), 300-314. https://doi.org/10.1016/j.amepre.2018.09.024
+* Blom, W. M., van Dijk, L. M., Michelsen-Huisman, A., Houben, G. F., Knulst, A. C., Linders, Y. F. M., Verhoeckx, K. C. M., Holleman, B. C., & Lentz, L. R. (2021). Allergen labelling: Current practice and improvement from a communication perspective. Clinical & Experimental Allergy, 51(4), 574-584. https://doi.org/10.1111/cea.13830
+* Georgina, Monique, & Michel. (2018). Consumer-friendly food allergen detection: moving towards smartphone-based immunoassays. Analytical and Bioanalytical Chemistry, 410(22), 5353-5371. https://doi.org/10.1007/s00216-018-0989-7
+* Goal 3 | Department of Economic and Social Affairs. (2025). Un.org. https://sdgs.un.org/goals/goal3
+* THE 17 GOALS | Sustainable Development. (2015). Un.org. https://sdgs.un.org/goals
+* Sathishkumar Kuppusamy, Moovendhan Meivelu, Loganathan Praburaman, Alam, M. M., Al-Sehemi, A. G., & Anbarasu K. (2024). Integrating AI in Food Contaminant Analysis: Enhancing Quality and Environmental Protection. Journal of Hazardous Materials Advances, 100509-100509. https://doi.org/10.1016/j.hazadv.2024.100509
+* Hansi Seitaj, & Vinayak Elangovan. (2024). Information Extraction from Product Labels: A Machine Vision Approach. International Journal of Artificial Intelligence & Applications, 15(2), 57-76. https://doi.org/10.5121/ijaia.2024.15204
+* Stryker, C., & Holdsworth, J. (2024, August 11). Natural language processing. Ibm.com. https://www.ibm.com/think/topics/natural-language-processing
+* Program, H. F. (2024, August 16). Food allergies: What you need to know. U.S. Food And Drug Administration. https://www.fda.gov/food/buy-store-serve-safe-food/food-allergies-what-you-need-know
+* Assiri, Fatmah Y, Alahmadi, M. D., Almuashi, M. A., & Almansour, Ayidh M. (2025). Extract Nutritional Information from Bilingual Food Labels Using Large Language Models. Journal of Imaging, 11(8), 271. https://doi.org/10.3390/jimaging11080271
+* Cheng, T. C. E., Cho, V., & Lai, W. M. J. (2007). The Role of User Interface in Technology Adoption. The International Journal of Interdisciplinary Social Sciences: Annual Review, 1(3), 25-48. https://doi.org/10.18848/1833-1882/cgp/v01i03/52586
+* Paul, J. (2024, November 18). Privacy and data security concerns in AI. ResearchGate; unknown. https://www.researchgate.net/publication/385781993_Privacy_and_data_security_concerns_in_AI
+* Palvadi, D. S. K. (2024). Integrating OCR and NLP Techniques for Accurate Text Extraction and Plagiarism Detection in Image-Based Content. International Journal of Advanced Science and Computer Applications, 4(1). https://doi.org/10.47679/ijasca.v4i1.105
+* Sneha Lodha, Shinde, S., Anand, A., Dalvi, P., & Dr. Jagannath Nalavade. (2025). NutriScan: AI-Based Ingredient Detection and Evaluation. International Journal of Engineering Research & Technology, 14(5). https://doi.org/10.17577/IJERTV14IS050197
+* Fabio, Gong, L., Caliva, F., Swainson, M., Gudmundsson, K., Yu, M., Georgios Leontidis, Ye, X., & Kollias, S. (2018). An End-to-End Deep Neural Architecture for Optical Character Verification and Recognition in Retail Food Packaging. Lincoln Repository (University of Lincoln), 2376-2380. https://doi.org/10.1109/icip.2018.8451555
+* OCR and NLP based Personalized Allergen Notifying System - IJSREM. (2025). Ijsrem.com. https://ijsrem.com/download/ocr-and-nlp-based-personalized-allergen-notifying-system/
+* General Data Protection Regulation (GDPR) - Final text neatly arranged. (2016, August 30). General Data Protection Regulation (GDPR). https://gdpr-info.eu/art-32-gdpr/
+* Ali Khan, J., Raman, A. M., Sambamoorthy, N., & Prashanth, K. (2023). Research Methodology (Methods, Approaches And Techniques). https://doi.org/10.59646/rmmethods/040
+* Ikbal, M. (2023). Software Development Life Cycle (SDLC) Methodologies for Information Systems Project Management. International Journal for Multidisciplinary Research, 5(5). https://doi.org/10.36948/ijfmr.2023.v05i05.6223
+* What is Rapid Application Development? (RAD Methodology) | Built In. (2024). Built In. https://builtin.com/articles/rapid-application-development#:~:text=more%20Rapid%20application%20development%20(RAD,complex%20or%20highly%20regulated%20environments.
+* Kolosky, C. (2024, July 31). 4 Phases of Rapid Application Development. Knack: No-Code Application Development Platform. https://www.knack.com/blog/rapid-application-development-phases/
+* Bhandari, P. (2021, July 15). Questionnaire Design | Methods, Question Types & Examples. Scribbr. https://www.scribbr.com/methodology/questionnaire/
+* Adedeji, A. A., Priyesh, P. V., & Odugbemi, A. A. (2024). The Magnitude and Impact of Food Allergens and the Potential of AI-Based Non-Destructive Testing Methods in Their Detection and Quantification. Foods, 13(7), 994. https://doi.org/10.3390/foods13070994
+* Zhou, F., Qiao, Y., & Li, Q. (2025). Real-Time Enhancement of Low-Light Images Using Generative Adversarial Networks (GANs). Journal of Technology Informatics and Engineering, 4(1), 1-20. https://doi.org/10.51903/jtie.v4i1.279
+
+
+APPENDICES
+Appendix A: Project Proposal Form (PPF)
+
+Figure 25: PPF Page 1
+
+Figure 26: PPF Page 2
+Appendix B: Ethics Forms (Fast Track)
+
+
+Figure 27: Ethics Form Page 1
+
+Figure 28: Ethics Form Page 2
+
+Figure 29: Ethics Form Page 3
+
+
+Figure 30: Ethics Form Page 4
+
+
+Appendix C: Log Sheets
+Log sheets 1
+
+
+Figure 31: Log Sheet 1.
+Log sheets 2
+
+
+Figure 32: Log Sheet 2.
+
+Log sheets 3
+
+
+
+Figure 33: Log Sheet
+
+
+
+
+Appendix D: Gantt Chart
+
+
+Figure 34: Gantt Chart for the IR.
+
+Appendix E: Respondent Demographic Profile
+Table 3: Demographic profile table
+
+
+NicknameAge Group
+Nationality
+GenderMohammed18-24YemenMaleDanial18-24IranMaleAbdul Basith18-24IndiaMaleAhmad18-24IndiaMaleRian18-24ChineseMaleSam18-24UzbekistanMaleAbdullah18-24YemenMaleZaman18-24SyriaMaleAisha18-24EgyptianFemaleKhaledUnder 18YemenMaleOmar18-24JordanianMaleRayyan18-24BangladeshMaleYasir18-24YemenMaleFatima18-24YemenFemaleMustafa18-24EgyptMaleYahya18-24YemenMaleAmjad18-24SyriaMaleMachira18-24TanzaniaMaleFaisal18-24PakistanMaleNasar18-24AlgeriaMaleHadil18-24YemenFemaleTalha25-34BangladeshMaleJawad18-24YemenMaleHamza18-24YemenMaleAyman18-24YemenMaleHashem18-24YemenMaleNader25-34YemenMaleHabil18-24PalestineMaleAnas18-24YemenMaleBelal25-34YemenMale
+
+Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+
+Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+
+Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+
+Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+
+Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+
+Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+
+Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+
+Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+
+Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+
+ye Yehia Rasheed Yehia Al Haddad		TP072510
+
+
+
+

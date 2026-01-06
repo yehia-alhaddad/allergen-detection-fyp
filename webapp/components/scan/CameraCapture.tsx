@@ -9,7 +9,10 @@ export default function CameraCapture({ onCapture }: { onCapture: (base64: strin
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment')
   const [loading, setLoading] = useState(false)
   const [cameraReady, setCameraReady] = useState(false)
+  const [permissionState, setPermissionState] = useState<'unknown' | 'granted' | 'prompt' | 'denied'>('unknown')
+  const [shouldAutoStart, setShouldAutoStart] = useState(false)
   const streamRef = useRef<MediaStream | null>(null)
+  const isInitializedRef = useRef(false)
 
   const startCamera = async (mode: 'user' | 'environment' = facingMode) => {
     try {
@@ -31,8 +34,33 @@ export default function CameraCapture({ onCapture }: { onCapture: (base64: strin
         audio: false
       }
 
+      // Guard for browser support and secure context (mobile browsers require HTTPS or localhost)
+      const supportsMediaDevices = typeof navigator !== 'undefined' && !!navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia
+      const isSecure = typeof window !== 'undefined' && (window.isSecureContext || location.protocol === 'https:' || location.hostname === 'localhost')
+
+      if (!supportsMediaDevices) {
+        setError('Camera not available in this context. Use HTTPS or localhost and a supported browser.')
+        setCameraReady(false)
+        setLoading(false)
+        return
+      }
+      if (!isSecure) {
+        setError('Camera requires a secure context (HTTPS) on mobile. Try opening via a secure tunnel or localhost.')
+        setCameraReady(false)
+        setLoading(false)
+        return
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia(constraints)
       streamRef.current = stream
+
+      // Persist permission success to reduce future prompts
+      try {
+        localStorage.setItem('cameraPermissionGranted', 'true')
+        setPermissionState('granted')
+      } catch (_) {
+        /* ignore storage failures */
+      }
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream
@@ -94,9 +122,50 @@ export default function CameraCapture({ onCapture }: { onCapture: (base64: strin
   }
 
   useEffect(() => {
-    startCamera()
-    return () => stopCamera()
+    // Prevent double initialization in React strict mode
+    if (isInitializedRef.current) return
+    isInitializedRef.current = true
+
+    const stored = (() => {
+      try { return localStorage.getItem('cameraPermissionGranted') === 'true' } catch { return false }
+    })()
+
+    const checkPermission = async () => {
+      if (typeof navigator === 'undefined' || !navigator.permissions) {
+        setPermissionState(stored ? 'granted' : 'prompt')
+        setShouldAutoStart(stored)
+        return
+      }
+      try {
+        const status = await navigator.permissions.query({ name: 'camera' as PermissionName })
+        const state = status.state as PermissionState
+        setPermissionState(state)
+        if (state === 'granted' || stored) {
+          setShouldAutoStart(true)
+        }
+        status.onchange = () => {
+          const next = status.state as PermissionState
+          setPermissionState(next)
+        }
+      } catch {
+        setPermissionState(stored ? 'granted' : 'prompt')
+        setShouldAutoStart(stored)
+      }
+    }
+
+    checkPermission()
+
+    return () => {
+      stopCamera()
+    }
   }, [])
+
+  // Auto-start only when permission already granted/persisted
+  useEffect(() => {
+    if (shouldAutoStart && !cameraReady && !loading) {
+      startCamera()
+    }
+  }, [shouldAutoStart])
 
   return (
     <div className="space-y-4">
@@ -121,6 +190,15 @@ export default function CameraCapture({ onCapture }: { onCapture: (base64: strin
 
       {/* Controls */}
       <div className="flex gap-3 flex-wrap">
+        {!cameraReady && (
+          <button
+            onClick={() => startCamera()}
+            disabled={loading}
+            className="flex-1 px-6 py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            📷 Enable Camera
+          </button>
+        )}
         <button
           onClick={capture}
           disabled={!cameraReady || loading}
@@ -130,7 +208,7 @@ export default function CameraCapture({ onCapture }: { onCapture: (base64: strin
         </button>
         <button
           onClick={toggleCamera}
-          disabled={loading}
+          disabled={loading || !cameraReady}
           className="px-4 py-3 rounded-lg bg-zinc-600 text-white hover:bg-zinc-700 disabled:opacity-50 transition flex items-center gap-2"
           title={`Switch to ${facingMode === 'environment' ? 'front' : 'back'} camera`}
         >
@@ -140,8 +218,14 @@ export default function CameraCapture({ onCapture }: { onCapture: (base64: strin
       </div>
 
       {/* Camera indicator */}
-      <div className="text-xs text-zinc-500 text-center">
-        {facingMode === 'environment' ? '📷 Back Camera' : '🤳 Front Camera'}
+      <div className="text-xs text-zinc-500 text-center space-y-1">
+        <div>{facingMode === 'environment' ? '📷 Back Camera' : '🤳 Front Camera'}</div>
+        {permissionState === 'denied' && (
+          <div className="text-red-600">Camera permission blocked. Enable in browser settings.</div>
+        )}
+        {permissionState === 'prompt' && !cameraReady && (
+          <div className="text-amber-600">Tap “Enable Camera” to grant access. We remember once allowed.</div>
+        )}
       </div>
 
       {/* Error */}

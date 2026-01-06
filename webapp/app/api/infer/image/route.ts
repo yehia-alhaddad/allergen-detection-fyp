@@ -2,10 +2,25 @@ import { NextResponse } from 'next/server'
 import { rateLimit } from '@/lib/rateLimiter'
 import { prisma } from '@/lib/db'
 import { auth } from '@/lib/auth'
+import jwt from 'jsonwebtoken'
+import { cookies } from 'next/headers'
 import { run_model_from_service, run_model_stub } from '@/lib/inference'
 import { analyzeIngredients } from '@/lib/allergy'
 
 export const runtime = 'nodejs'
+
+function getUserEmailFromCookie() {
+  const cookieStore = cookies()
+  const token = cookieStore.get('next-auth.session-token')?.value
+  if (!token) return null
+  const secret = process.env.NEXTAUTH_SECRET || 'dev-secret'
+  try {
+    const decoded = jwt.verify(token, secret) as any
+    return decoded?.email || null
+  } catch {
+    return null
+  }
+}
 
 export async function POST(req: Request) {
   const ip = (req.headers.get('x-forwarded-for') || 'local').split(',')[0].trim()
@@ -13,8 +28,9 @@ export async function POST(req: Request) {
 
   const session = await auth()
   let user = null
-  if (session?.user?.email) {
-    user = await prisma.user.findUnique({ where: { email: session.user.email } })
+  const email = session?.user?.email || getUserEmailFromCookie()
+  if (email) {
+    user = await prisma.user.findUnique({ where: { email } })
   }
 
   const form = await req.formData().catch(() => null)
@@ -27,18 +43,26 @@ export async function POST(req: Request) {
   let inference
   try {
     inference = await run_model_from_service(base64)
-  } catch {
-    inference = await run_model_stub(base64)
+    if (inference && inference.serviceAvailable === false) {
+      return NextResponse.json({ error: 'ML service unavailable. Please start the ML API.' }, { status: 503 })
+    }
+    if (inference && inference.error && (inference.serviceAvailable ?? true)) {
+      // Service reachable but returned error - pass through the specific error message
+      return NextResponse.json({ error: inference.error }, { status: 400 })
+    }
+  } catch (e) {
+    console.error('Inference route error:', e)
+    return NextResponse.json({ error: 'Inference failed. Check ML API.' }, { status: 500 })
   }
 
   // Prefer cleaned text from API for downstream matching
   const pseudoText = (inference.cleanedText || inference.rawText || inference.labels.join(', ')).toString()
-  let result = { classification: 'SAFE' as const, matches: [] as any[] }
+  let result: { classification: 'SAFE' | 'CAUTION' | 'UNSAFE', matches: any[] } = { classification: 'SAFE', matches: [] }
   
   if (user) {
     // Logged-in users: personalized analysis
     const allergens = await prisma.userAllergen.findMany({ where: { userId: user.id } })
-    const profile = allergens.map(a => ({
+    const profile = allergens.map((a: any) => ({
       name: a.name,
       synonyms: Array.isArray((a as any).synonyms)
         ? (a as any).synonyms as string[]
@@ -54,16 +78,29 @@ export async function POST(req: Request) {
     }
   }
 
+  // Fallback: if personalized analysis found nothing but the model detected allergens, surface them for history display
+  if (result.matches.length === 0 && inference?.detectedAllergens) {
+    const detectedKeys = Object.keys(inference.detectedAllergens || {})
+    if (detectedKeys.length > 0) {
+      result = {
+        classification: result.classification === 'SAFE' ? 'CAUTION' : result.classification,
+        matches: detectedKeys.map(k => ({ name: k })),
+      }
+    }
+  }
+
   // Save scan history (only for logged-in users)
   if (user) {
+    const productName = file?.name?.trim() ? file.name : `Product (${new Date().toISOString()})`
+
     await prisma.scanHistory.create({
       data: {
         userId: user.id,
         type: 'IMAGE',
-        productName: `Product (${new Date().toISOString()})`,
+        productName,
         classification: result.classification,
         matchedAllergens: JSON.stringify(result.matches),
-        inputMetadata: JSON.stringify({ labels: inference.labels, source: 'ml_inference' }),
+        inputMetadata: JSON.stringify({ labels: inference.labels, source: 'ml_inference', fileName: file?.name }),
         storeRawImage: false
       }
     })
@@ -76,6 +113,7 @@ export async function POST(req: Request) {
     rawText: inference.rawText,
     cleanedText: inference.cleanedText,
     segments: inference.segments,
+    allergen_detection: inference.allergenDetection,
   })
 }
 

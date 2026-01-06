@@ -108,8 +108,7 @@ allergen-detection-fyp/
 │   ├── README.md                       # Documentation index
 │   ├── API_README.md                   # API detailed docs
 │   └── FYP_VALIDATION_REPORT.md        # Real product validation
-└── app/
-    └── streamlit_app.py                # Web UI
+└── webapp/                             # Next.js frontend (primary UI)
 ```
 
 ---
@@ -196,8 +195,6 @@ results = [api.detect_from_ocr(ocr_text, 'prod.jpg') for ocr_text in texts]
 stats = api.get_stats(results)
 "
 ```
-
-### Run Streamlit UI
 ---
 
 ## 🐙 Publish to GitHub
@@ -242,10 +239,6 @@ powershell -ExecutionPolicy Bypass -File scripts/auto_publish.ps1 -IntervalSecon
 - Use the "Auto Publish (Watch)" task to push every minute when there are changes.
 - Alternatively, commit and push manually using the "Publish to GitHub" task.
 - CI runs on every push to `main`: Python deps + optional tests, Next.js build.
-
-```bash
-streamlit run app/streamlit_app.py
-```
 
 ---
 

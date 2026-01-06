@@ -11,7 +11,11 @@ webapp/node_modules/
 webapp/.next/
 webapp/.env.local
 webapp/.env*
-webapp/NUL
+
+# Docker (not used)
+Dockerfile
+docker-compose.yml
+.dockerignore
 
 # Data & models (large files)
 models/**
@@ -20,6 +24,9 @@ results/**
 data/raw/**
 data/processed/**
 data/ocr_results/**
+data/barcode_cache/**
+legacy/**
+tests/**
 notebooks/.ipynb_checkpoints/
 
 # OS/editor

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Camera, Upload, BarChart3, FileText, AlertCircle } from 'lucide-react'
+import { Camera, Upload, FileText, AlertCircle } from 'lucide-react'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
@@ -69,22 +69,6 @@ export default function DashboardPage() {
           </div>
         </Link>
 
-        {/* Barcode Scan */}
-        <Link href="/scan-barcode">
-          <div className="group bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full border-2 border-transparent hover:border-pink-400">
-            <div className="bg-gradient-to-br from-pink-100 to-pink-200 w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <BarChart3 className="text-pink-600" size={32} />
-            </div>
-            <h3 className="text-2xl font-bold text-zinc-900 mb-3">Barcode Scan</h3>
-            <p className="text-zinc-600 mb-4 leading-relaxed">
-              Scan the product barcode (UPC/EAN code) to instantly look up ingredients and allergen information.
-            </p>
-            <div className="text-sm text-pink-600 font-semibold group-hover:translate-x-1 transition-transform">
-              Scan barcode →
-            </div>
-          </div>
-        </Link>
-
         {/* Text Input */}
         <Link href="/scan-text">
           <div className="group bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full border-2 border-transparent hover:border-orange-400">
@@ -103,11 +87,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Links */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-200 mb-8">
+      <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-8 border border-emerald-200 mb-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <h3 className="text-xl font-bold text-zinc-900 mb-2 flex items-center gap-2">
-              <AlertCircle size={24} className="text-blue-600" />
+              <AlertCircle size={24} className="text-emerald-600" />
               {user ? 'Personalize Your Profile' : 'Create an Account'}
             </h3>
             <p className="text-zinc-600">
@@ -117,11 +101,11 @@ export default function DashboardPage() {
             </p>
           </div>
           {user ? (
-            <Link href="/profile" className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all whitespace-nowrap">
+            <Link href="/profile" className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all whitespace-nowrap">
               Manage Allergens
             </Link>
           ) : (
-            <Link href="/signup" className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all whitespace-nowrap">
+            <Link href="/signup" className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all whitespace-nowrap">
               Sign Up Now
             </Link>
           )}
@@ -131,12 +115,12 @@ export default function DashboardPage() {
       {/* History Link */}
       <div className="text-center">
         {user ? (
-          <Link href="/history" className="text-blue-600 font-semibold hover:text-blue-700 text-lg">
+          <Link href="/history" className="text-emerald-700 font-semibold hover:text-emerald-800 text-lg">
             View Scan History →
           </Link>
         ) : (
           <p className="text-zinc-600 mb-4">
-            <Link href="/signup" className="text-blue-600 font-semibold hover:text-blue-700">
+            <Link href="/signup" className="text-emerald-700 font-semibold hover:text-emerald-800">
               Sign up
             </Link>
             {' '}to save and track your scan history

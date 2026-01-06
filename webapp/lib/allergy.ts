@@ -1,4 +1,4 @@
-export type MatchSource = 'ingredients' | 'may_contain' | 'ocr' | 'barcode'
+export type MatchSource = 'ingredients' | 'may_contain' | 'ocr'
 export type Classification = 'SAFE' | 'CAUTION' | 'UNSAFE'
 
 export interface UserAllergenProfile {

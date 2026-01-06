@@ -2,11 +2,22 @@ import re
 
 
 def clean_text(text: str) -> str:
+    """
+    Clean OCR text while preserving numbers, special characters (%, -, /, etc.), and structure.
+    Minimal cleaning - only normalize whitespace and remove non-printable characters.
+    No hardcoded OCR error corrections; detector handles garbled text intelligently.
+    """
     text = text or ""
-    text = text.replace("\r", "\n")
-    text = re.sub(r"\n+", "\n", text)
-    text = re.sub(r"[^\x20-\x7E\n]", "", text)  # printable ASCII
+    
+    # Normalize line breaks to space (preserve structure but merge lines)
+    text = text.replace("\r\n", " ").replace("\r", " ").replace("\n", " ")
+    
+    # Collapse multiple spaces into single space
     text = re.sub(r"\s+", " ", text)
+    
+    # Remove only truly non-printable characters (keep %, numbers, punctuation, letters)
+    text = re.sub(r"[\x00-\x1F\x7F-\x9F]", "", text)
+    
     return text.strip()
 
 

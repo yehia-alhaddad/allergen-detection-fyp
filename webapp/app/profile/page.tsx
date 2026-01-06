@@ -17,7 +17,7 @@ export default function ProfilePage() {
   const [allergens, setAllergens] = useState<Allergen[]>([])
   const [loading, setLoading] = useState(true)
   const [isAdding, setIsAdding] = useState(false)
-  const [newAllergen, setNewAllergen] = useState({ name: '', synonyms: '', severity: 'moderate' })
+  const [newAllergen, setNewAllergen] = useState({ name: '', synonyms: '', severity: 'moderate', other: '' })
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const router = useRouter()
@@ -49,8 +49,9 @@ export default function ProfilePage() {
 
   const handleAddAllergen = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newAllergen.name.trim()) {
-      setError('Please enter an allergen name')
+    const chosenName = newAllergen.name === 'other' ? newAllergen.other.trim() : newAllergen.name.trim()
+    if (!chosenName) {
+      setError('Please choose or type an allergen')
       return
     }
 
@@ -61,16 +62,21 @@ export default function ProfilePage() {
       const res = await fetch('/api/allergens/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newAllergen)
+        body: JSON.stringify({
+          name: chosenName,
+          synonyms: newAllergen.synonyms,
+          severity: newAllergen.severity
+        })
       })
 
       if (res.ok) {
         const data = await res.json()
         setAllergens([...allergens, data.allergen])
-        setNewAllergen({ name: '', synonyms: '', severity: 'moderate' })
+        setNewAllergen({ name: '', synonyms: '', severity: 'moderate', other: '' })
         setIsAdding(false)
         setSuccess('Allergen added successfully!')
         setTimeout(() => setSuccess(''), 3000)
+        router.refresh()
       } else {
         const data = await res.json()
         setError(data.error || 'Failed to add allergen')
@@ -93,6 +99,7 @@ export default function ProfilePage() {
         setAllergens(allergens.filter(a => a.id !== id))
         setSuccess('Allergen deleted successfully!')
         setTimeout(() => setSuccess(''), 3000)
+        router.refresh()
       } else {
         setError('Failed to delete allergen')
       }
@@ -105,7 +112,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
       </div>
     )
   }
@@ -115,16 +122,16 @@ export default function ProfilePage() {
       <main className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="text-center">
-            <Shield className="mx-auto mb-4 text-blue-600" size={48} />
+            <Shield className="mx-auto mb-4 text-emerald-600" size={48} />
             <h1 className="text-3xl font-bold text-zinc-900 mb-4">Create an Account</h1>
             <p className="text-zinc-600 mb-8 text-lg">
               Sign up to save your personal allergen profile and get personalized scanning results.
             </p>
-            <Link href="/signup" className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
+            <Link href="/signup" className="inline-block px-8 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
               Sign Up Now
             </Link>
             <p className="text-zinc-600 mt-6">
-              Already have an account? <Link href="/signin" className="text-blue-600 font-semibold hover:text-blue-700">Sign In</Link>
+              Already have an account? <Link href="/signin" className="text-emerald-700 font-semibold hover:text-emerald-800">Sign In</Link>
             </p>
           </div>
         </div>
@@ -139,7 +146,7 @@ export default function ProfilePage() {
         <p className="text-zinc-600 mb-8">Manage your account and allergens</p>
 
         {/* User Info */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-8 border border-blue-200">
+        <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-6 mb-8 border border-emerald-200">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <p className="text-sm text-zinc-600 mb-1">Email</p>
@@ -154,7 +161,7 @@ export default function ProfilePage() {
 
         {/* Allergens Section */}
         <h2 className="text-2xl font-bold text-zinc-900 mb-6 flex items-center gap-2">
-          <Shield className="text-blue-600" size={28} />
+          <Shield className="text-emerald-600" size={28} />
           Your Allergens
         </h2>
 
@@ -184,8 +191,8 @@ export default function ProfilePage() {
                   {allergen.severity && (
                     <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold ${
                       allergen.severity === 'severe' ? 'bg-red-100 text-red-700' :
-                      allergen.severity === 'moderate' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-blue-100 text-blue-700'
+                      allergen.severity === 'moderate' ? 'bg-amber-100 text-amber-700' :
+                      'bg-emerald-100 text-emerald-700'
                     }`}>
                       {allergen.severity.charAt(0).toUpperCase() + allergen.severity.slice(1)}
                     </span>
@@ -201,7 +208,7 @@ export default function ProfilePage() {
             ))}
           </div>
         ) : (
-          <div className="mb-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="mb-8 p-6 bg-emerald-50 rounded-lg border border-emerald-200">
             <p className="text-zinc-700">No allergens added yet. Add your allergens to get personalized scan results.</p>
           </div>
         )}
@@ -210,22 +217,50 @@ export default function ProfilePage() {
         {!isAdding ? (
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
           >
             <Plus size={20} />
             Add Allergen
           </button>
         ) : (
           <form onSubmit={handleAddAllergen} className="bg-zinc-50 p-6 rounded-lg border border-zinc-200 space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-zinc-700 mb-2">Allergen Name *</label>
-              <input
-                type="text"
-                value={newAllergen.name}
-                onChange={(e) => setNewAllergen({ ...newAllergen, name: e.target.value })}
-                placeholder="e.g., Peanuts, Milk, Shellfish"
-                className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-semibold text-zinc-700 mb-2">Select Allergen *</label>
+                <select
+                  value={newAllergen.name}
+                  onChange={(e) => setNewAllergen({ ...newAllergen, name: e.target.value, other: '' })}
+                  className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                >
+                  <option value="">Choose an allergen</option>
+                  <option value="Peanuts">Peanuts</option>
+                  <option value="Tree Nuts">Tree Nuts (e.g., almonds, walnuts)</option>
+                  <option value="Milk">Milk / Dairy</option>
+                  <option value="Egg">Egg</option>
+                  <option value="Gluten">Gluten / Wheat</option>
+                  <option value="Soy">Soy</option>
+                  <option value="Fish">Fish</option>
+                  <option value="Shellfish">Shellfish / Crustaceans</option>
+                  <option value="Sesame">Sesame</option>
+                  <option value="Mustard">Mustard</option>
+                  <option value="Celery">Celery</option>
+                  <option value="Sulphites">Sulphites</option>
+                  <option value="Lupin">Lupin</option>
+                  <option value="other">Other (type below)</option>
+                </select>
+              </div>
+              {newAllergen.name === 'other' && (
+                <div>
+                  <label className="block text-sm font-semibold text-zinc-700 mb-2">Other Allergen *</label>
+                  <input
+                    type="text"
+                    value={newAllergen.other}
+                    onChange={(e) => setNewAllergen({ ...newAllergen, other: e.target.value })}
+                    placeholder="e.g., Corn, Kiwi, Buckwheat"
+                    className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                  />
+                </div>
+              )}
             </div>
 
             <div>
@@ -240,22 +275,23 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-zinc-700 mb-2">Severity</label>
+              <label className="block text-sm font-semibold text-zinc-700 mb-1">Severity</label>
+              <p className="text-xs text-zinc-500 mb-2">Choose how serious your reaction is so alerts match your risk.</p>
               <select
                 value={newAllergen.severity}
                 onChange={(e) => setNewAllergen({ ...newAllergen, severity: e.target.value })}
-                className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
               >
-                <option value="mild">Mild</option>
-                <option value="moderate">Moderate</option>
-                <option value="severe">Severe</option>
+                <option value="mild">Mild — minor discomfort or mild symptoms</option>
+                <option value="moderate">Moderate — noticeable symptoms; caution advised</option>
+                <option value="severe">Severe — high risk; strict avoidance required</option>
               </select>
             </div>
 
             <div className="flex gap-3">
               <button
                 type="submit"
-                className="flex-1 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                className="flex-1 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition"
               >
                 Add Allergen
               </button>
@@ -271,7 +307,7 @@ export default function ProfilePage() {
         )}
 
         <div className="mt-12 pt-8 border-t border-zinc-200">
-          <Link href="/dashboard" className="text-blue-600 font-semibold hover:text-blue-700">
+          <Link href="/dashboard" className="text-emerald-700 font-semibold hover:text-emerald-800">
             ← Back to Dashboard
           </Link>
         </div>

@@ -7,9 +7,8 @@ Production-ready Next.js web application for allergen detection and ingredient a
 - **Auth**: Secure sign-up/in with email + bcrypt password hashing, JWT sessions
 - **Allergy Profile**: Personalized allergen list with synonyms + severity levels
 - **Multi-method Detection**:
-  - Image upload & camera capture → ML model inference
-  - Barcode scanning → product lookup (OpenFoodFacts)
-  - Ingredient text → direct analysis
+   - Image upload & camera capture → ML model inference
+   - Ingredient text → direct analysis
 - **Smart Matching**: Word-boundary aware, case-insensitive, supports "may contain" detection
 - **Results**: Safe/Caution/Unsafe classification with matched allergen details + snippets
 - **Accessibility**: Keyboard navigation, ARIA labels, high contrast
@@ -20,7 +19,6 @@ Production-ready Next.js web application for allergen detection and ingredient a
 - **Backend**: Next.js API routes + NextAuth for auth
 - **Database**: Prisma ORM (SQLite dev, Postgres prod)
 - **ML**: Call your FastAPI service; stub included
-- **Barcode**: OpenFoodFacts API + mock provider with fallback
 
 ## Quick Start
 
@@ -82,7 +80,6 @@ docker run -p 3000:3000 -e DATABASE_URL=... allergen-webapp
 - `POST /api/profile/allergens` - Save/get allergens
 - `POST /api/infer/image` - Multipart image → inference
 - `POST /api/infer/capture` - Base64 camera frame → inference
-- `POST /api/barcode/lookup` - Barcode → product + analysis
 - `POST /api/ingredients/check` - Text → ingredient analysis
 
 ## Connecting Your ML Model
@@ -114,12 +111,12 @@ webapp/
 │   ├── dashboard/        # Main entry
 │   ├── onboarding/       # Setup allergen profile
 │   ├── profile/          # View/edit allergens
-│   ├── scan/             # Scan routes (upload, camera, barcode, text)
+│   ├── scan/             # Scan routes (upload, camera, text)
 │   ├── api/              # API routes
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing page
 ├── components/
-│   ├── scan/             # Scan UI (camera, barcode, result)
+│   ├── scan/             # Scan UI (camera, result)
 │   └── ui/               # Reusable UI components
 ├── lib/
 │   ├── allergy.ts        # Allergen matching logic
@@ -127,7 +124,6 @@ webapp/
 │   ├── rateLimiter.ts    # Simple token bucket
 │   ├── auth.ts           # NextAuth config
 │   ├── db.ts             # Prisma client
-│   └── providers/        # Product lookup providers
 ├── prisma/
 │   └── schema.prisma     # DB schema
 ├── styles/
@@ -160,11 +156,7 @@ Run these to verify the app works:
    - Click Analyze
    - Should show: classification=UNSAFE, matched allergen="milk"
 
-5. **Barcode Lookup (Mock)**
-   - Click "Scan Barcode" → enter manual barcode: `5901234123457`
-   - Should show: "Sample Sauce" + "Safe" (no allergens in DB record)
-
-6. **Profile Page**
+5. **Profile Page**
    - Sign in, go to [http://localhost:3000/profile](http://localhost:3000/profile)
    - Should list saved allergens
 
@@ -177,7 +169,6 @@ Run these to verify the app works:
 | `NEXTAUTH_SECRET` | *required* | Min 32 random chars for JWT signing |
 | `NEXTAUTH_URL` | `http://localhost:3000` | Your app URL |
 | `ML_API_URL` | `http://localhost:8000/detect-text` | Your ML service endpoint |
-| `USE_MOCK_PROVIDER` | `true` | Use mock barcode provider (set `false` for OpenFoodFacts) |
 | `NODE_ENV` | `development` | `development` or `production` |
 
 ## Notes
@@ -185,7 +176,7 @@ Run these to verify the app works:
 - **No medical claims**: Results are advisory. Always tell users to verify labels.
 - **Rate limiting**: Simple in-memory token bucket. For production, use Redis/Memcached.
 - **Images**: By default, only results are stored—not raw images. Toggle `storeRawImage` in ScanHistory for opt-in.
-- **Camera/Barcode**: Requires HTTPS in production; localhost works fine for dev.
+- **Camera**: Requires HTTPS in production; localhost works fine for dev.
 - **Error handling**: All endpoints return JSON with status codes. Frontend provides user feedback.
 
 ## Next Steps

@@ -2,8 +2,9 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Upload, AlertCircle, CheckCircle, X } from 'lucide-react'
+import { Upload, AlertCircle, X, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import EnhancedScanResult from '@/components/scan/EnhancedScanResult'
 
 export default function ScanImagePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -58,7 +59,34 @@ export default function ScanImagePage() {
         return
       }
 
-      setResult(data)
+      // Transform API response to match EnhancedScanResult format
+      const allergenDetection = data.allergen_detection || {}
+      
+      const transformedResult = {
+        contains: (allergenDetection.contains || []).map((a: any) => ({
+          allergen: a.allergen,
+          evidence: a.evidence || a.matched_keyword || '',
+          keyword: a.keyword || a.matched_keyword || '',
+          trigger_phrase: a.evidence || a.matched_keyword || '',
+          source_section: 'ingredients' as const,
+          confidence: a.confidence || 0.9
+        })),
+        may_contain: (allergenDetection.may_contain || []).map((a: any) => ({
+          allergen: a.allergen,
+          evidence: a.evidence || a.matched_keyword || '',
+          keyword: a.keyword || a.matched_keyword || '',
+          trigger_phrase: a.evidence || a.matched_keyword || '',
+          source_section: 'warning_statement' as const,
+          confidence: a.confidence || 0.9
+        })),
+        not_detected: (allergenDetection.not_detected || []).map((a: any) => ({
+          allergen: typeof a === 'string' ? a : a.name,
+          reason: 'No matching terms found in ingredients or warning statements',
+          confidence: 0.1
+        }))
+      }
+
+      setResult(transformedResult)
     } catch (err) {
       setError('An error occurred while processing the image')
       console.error('Scan error:', err)
@@ -70,60 +98,38 @@ export default function ScanImagePage() {
   if (result) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-zinc-900 mb-8">Scan Results</h1>
-
-          {result.classification === 'SAFE' ? (
-            <div className="mb-8 p-6 bg-green-50 border-2 border-green-500 rounded-xl">
-              <div className="flex items-center gap-3 mb-2">
-                <CheckCircle className="text-green-600" size={28} />
-                <h2 className="text-2xl font-bold text-green-700">Safe to Eat ✓</h2>
-              </div>
-              <p className="text-green-700">No concerning allergens were detected in this product.</p>
-            </div>
-          ) : (
-            <div className="mb-8 p-6 bg-red-50 border-2 border-red-500 rounded-xl">
-              <div className="flex items-center gap-3 mb-2">
-                <AlertCircle className="text-red-600" size={28} />
-                <h2 className="text-2xl font-bold text-red-700">Contains Allergens ⚠️</h2>
-              </div>
-              <p className="text-red-700">Potential allergens were detected:</p>
-              <div className="mt-4 space-y-2">
-                {result.matches && result.matches.map((match: any, i: number) => (
-                  <div key={i} className="bg-white p-3 rounded-lg">
-                    <p className="font-semibold text-red-700">{match.name || match}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-red-600 mt-4">
-                💡 <strong>Tip:</strong> Create an account and add your allergens for personalized scanning!
-              </p>
-            </div>
-          )}
-
-          <div className="grid md:grid-cols-2 gap-4 mb-8">
-            <button
-              onClick={() => {
-                setResult(null)
-                setSelectedFile(null)
-                setPreview(null)
-              }}
-              className="px-6 py-3 bg-zinc-200 text-zinc-900 font-semibold rounded-lg hover:bg-zinc-300 transition"
-            >
-              Scan Another
-            </button>
-            <Link href="/dashboard" className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition text-center">
-              Back to Dashboard
-            </Link>
-          </div>
+        <Link href="/dashboard" className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 mb-6 font-medium">
+          <ArrowLeft size={20} />
+          Back to Dashboard
+        </Link>
+        <EnhancedScanResult 
+          result={result}
+          imageFile={selectedFile || undefined}
+        />
+        <div className="mt-6 grid md:grid-cols-2 gap-4">
+          <button
+            onClick={() => {
+              setResult(null)
+              setSelectedFile(null)
+              setPreview(null)
+            }}
+            className="px-6 py-3 bg-zinc-200 text-zinc-900 font-semibold rounded-lg hover:bg-zinc-300 transition"
+          >
+            Scan Another
+          </button>
+          <Link href="/dashboard" className="px-6 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition text-center">
+            Back to Dashboard
+          </Link>
         </div>
       </main>
     )
   }
 
   return (
-    <main className="max-w-4xl mx-auto px-4 py-12">
-      <div className="bg-white rounded-2xl shadow-lg p-8">
+    <main className="max-w-4xl mx-auto px-4 py-12">      <Link href="/dashboard" className="inline-flex items-center gap-2 text-zinc-600 hover:text-zinc-900 mb-6 font-medium">
+        <ArrowLeft size={20} />
+        Back to Dashboard
+      </Link>      <div className="bg-white rounded-2xl shadow-lg p-8">
         <h1 className="text-3xl font-bold text-zinc-900 mb-2">Upload Image</h1>
         <p className="text-zinc-600 mb-8">Take a photo of the product label and upload it for instant allergen detection</p>
 
@@ -139,7 +145,7 @@ export default function ScanImagePage() {
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-zinc-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-600 hover:bg-blue-50 transition mb-6"
+          className="border-2 border-dashed border-zinc-300 rounded-xl p-8 text-center cursor-pointer hover:border-emerald-600 hover:bg-emerald-50 transition mb-6"
         >
           {preview ? (
             <div className="relative">
@@ -178,7 +184,7 @@ export default function ScanImagePage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Scanning...' : 'Scan for Allergens'}
             </button>
