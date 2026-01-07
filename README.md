@@ -29,6 +29,82 @@ Peanut, Tree Nuts, Milk, Egg, Fish, Shellfish, Gluten, Sesame, Soy, Mustard, Sul
 
 ---
 
+## 🚀 Setup & Installation
+
+### Prerequisites
+- **Python 3.8+** with pip
+- **Node.js 18+** with npm
+- **Git** (for cloning)
+- **CUDA** (optional, for GPU acceleration)
+
+### First-Time Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd allergen-detection-fyp
+   ```
+
+2. **Set up Python environment**
+   ```bash
+   # Create virtual environment
+   python -m venv .venv
+   
+   # Activate it (Windows PowerShell)
+   .venv\Scripts\Activate.ps1
+   
+   # Or Windows CMD
+   .venv\Scripts\activate.bat
+   
+   # Or Linux/Mac
+   source .venv/bin/activate
+   
+   # Install Python packages (~10-15 minutes, 2-3GB download)
+   pip install -r requirements.txt
+   ```
+
+3. **Set up web application**
+   ```bash
+   cd webapp
+   npm install
+   cd ..
+   ```
+
+4. **Configure environment** (optional)
+   ```bash
+   # Copy example env files
+   cp webapp/.env.example webapp/.env.local
+   
+   # Edit .env.local with your settings if needed
+   ```
+
+### Running the Application
+
+**Option 1: VS Code Task (Recommended)**
+- Open project in VS Code
+- Press `Ctrl+Shift+B` (or `Cmd+Shift+B` on Mac)
+- Select "Start All Services (Robust)"
+- Access web app at http://localhost:3000
+
+**Option 2: PowerShell Script**
+```powershell
+.\scripts\start-all-services.ps1
+```
+
+**Option 3: Manual Start**
+```bash
+# Terminal 1 - Start ML API
+python -m src.api.allergen_api
+
+# Terminal 2 - Start web app
+cd webapp
+npm run dev
+```
+
+The first run will take ~30-60 seconds as Next.js builds the frontend.
+
+---
+
 ## 🚀 Quick Start
 
 ### Single Image Processing

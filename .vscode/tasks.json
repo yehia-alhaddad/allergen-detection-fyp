@@ -36,7 +36,7 @@
       "command": "powershell",
       "args": [
         "-ExecutionPolicy", "Bypass",
-        "-File", "${workspaceFolder}/scripts/start-all-services.ps1"
+        "-File", "${workspaceFolder}/start-all-services.ps1"
       ],
       "isBackground": false,
       "problemMatcher": [],

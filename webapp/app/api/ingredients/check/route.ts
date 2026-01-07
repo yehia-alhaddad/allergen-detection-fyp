@@ -9,6 +9,8 @@ import { analyzeIngredients } from '@/lib/allergy'
 
 const Schema = z.object({ text: z.string().min(3) })
 
+export const runtime = 'nodejs'
+
 function getUserEmailFromCookie() {
   const cookieStore = cookies()
   const token = cookieStore.get('next-auth.session-token')?.value
