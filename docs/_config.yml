@@ -1,0 +1,35 @@
+title: SafeEats - AI Allergen Detection System
+description: Real-time allergen detection from food labels using OCR and NER
+theme: jekyll-theme-primer
+baseurl: /allergen-detection-fyp
+url: https://yehia-alhaddad.github.io/allergen-detection-fyp
+
+# Navigation
+navigation:
+  - name: Home
+    path: /
+  - name: Architecture
+    path: /architecture/
+  - name: API Docs
+    path: /api/
+  - name: Deployment
+    path: /deployment/
+
+# Jekyll settings
+markdown: GFM
+highlighter: rouge
+plugins:
+  - jekyll-github-metadata
+  - jekyll-seo-tag
+  - jekyll-relative-links
+
+# Build settings
+exclude:
+  - "*.md~"
+  - .venv
+  - node_modules
+  - .git
+  - scripts
+  - notebooks
+  - test_images
+  - models
